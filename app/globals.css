@@ -1,26 +1,84 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f3ef;
+  --foreground: #1c1f26;
+  --muted-foreground: #6c7485;
+  --surface-canvas: #f5f3ef;
+  --surface-card: #ffffff;
+  --surface-card-alt: #faf8f4;
+  --surface-sidebar: #f7f4ef;
+  --surface-sidebar-border: rgba(25, 28, 35, 0.06);
+  --surface-brand: #0f67ea;
+  --surface-brand-soft: rgba(15, 103, 234, 0.1);
+  --surface-brand-strong: #0b53be;
+  --surface-accent: #b9ef93;
+  --surface-accent-foreground: #21401b;
+  --surface-success: #0f9f6e;
+  --surface-warning: #d97706;
+  --surface-critical: #dc2626;
+  --border-subtle: rgba(28, 31, 38, 0.08);
+  --border-strong: rgba(28, 31, 38, 0.14);
+  --shadow-card: 0 10px 30px rgba(25, 28, 35, 0.05);
+  --shadow-soft: 0 8px 18px rgba(25, 28, 35, 0.04);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html[data-theme="dark"] {
+  --background: #0f1116;
+  --foreground: #eef3fb;
+  --muted-foreground: #9ca7bb;
+  --surface-canvas: #0f1116;
+  --surface-card: #171a21;
+  --surface-card-alt: #1d212b;
+  --surface-sidebar: #13171f;
+  --surface-sidebar-border: rgba(226, 232, 240, 0.08);
+  --surface-brand-soft: rgba(15, 103, 234, 0.24);
+  --surface-accent: #1c3920;
+  --surface-accent-foreground: #cff5b4;
+  --border-subtle: rgba(148, 163, 184, 0.2);
+  --border-strong: rgba(148, 163, 184, 0.32);
+  --shadow-card: 0 20px 40px rgba(2, 8, 23, 0.45);
+  --shadow-soft: 0 8px 24px rgba(2, 8, 23, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--surface-canvas);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: rgba(15, 103, 234, 0.22);
+}
+
+.text-balance {
+  text-wrap: balance;
 }

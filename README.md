@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NAVA
 
-## Getting Started
+NAVA is a workspace-centric social media management SaaS foundation built with Next.js, React, TypeScript, Tailwind CSS, and Supabase-ready architecture.
 
-First, run the development server:
+This first build target covers:
+
+- landing, signup, login, onboarding, and workspace shell
+- personal and agency account models
+- client-aware dashboard, content, calendar, approval, audit, insight, and settings surfaces
+- demo-mode persistence with clearly labeled seeded data
+- initial Supabase schema and row-level security scaffolding
+
+## Tech stack
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Geist
+- Supabase-ready auth and data boundaries
+- Zod validation
+
+## Running locally
+
+Install dependencies and start the app:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Demo mode vs live mode
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The UI works immediately in demo mode. Demo mode:
 
-## Learn More
+- persists local workspace state in browser storage
+- seeds believable content, audit, and insight data
+- clearly labels seeded metrics and connections as demo data
+- does not pretend social or email integrations are live
 
-To learn more about Next.js, take a look at the following resources:
+To prepare live Supabase wiring, copy the example environment file and add your project values:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+cp .env.example .env.local
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Required variables:
 
-## Deploy on Vercel
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Supabase schema
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The initial schema lives in:
+
+```text
+supabase/migrations/0001_initial_schema.sql
+```
+
+It includes core ownership and first-build-target tables for:
+
+- profiles
+- workspaces
+- clients
+- social_accounts
+- content_items
+- content_variants
+- content_targets
+- approval_requests
+- approval_decisions
+- share_links
+- comments
+- audit_reports
+- audit_findings
+
+Every tenant-owned table uses a `workspace_id` boundary and the migration scaffolds row-level security policies around workspace ownership.
+
+## App structure
+
+```text
+app/
+  (auth)/
+  app/
+  onboarding/
+
+components/nava/
+  app-shell.tsx
+  auth-page.tsx
+  landing-page.tsx
+  nava-provider.tsx
+  onboarding-page.tsx
+  ui.tsx
+  workspace-pages.tsx
+
+lib/
+  nava/
+  supabase/
+```
+
+## Validation
+
+Run the baseline checks with:
+
+```bash
+pnpm lint
+pnpm build
+```
+
+## Notes
+
+- Auth and platform integrations are scaffolded, not faked.
+- The current implementation intentionally favors honest demo mode over pretending external services are connected.
+- Client sharing, comments, and provider-specific publishing adapters can build on the same ownership architecture without rebuilding the foundation.
