@@ -3,12 +3,12 @@ import type { Platform } from "@/lib/nava/types";
 export const workspaceNavigation = [
   { href: "/app", label: "Dashboard" },
   { href: "/app/posts", label: "Posts" },
-  { href: "/app/calendar", label: "Calender" },
+  { href: "/app/calendar", label: "Calendar" },
   { href: "/app/accounts", label: "Accounts" },
   { href: "/app/groups", label: "Groups" },
   { href: "/app/analytics", label: "Analytics" },
   { href: "/app/inbox", label: "Inbox" },
-  { href: "/app/contect", label: "Contect" },
+  { href: "/app/contect", label: "Contacts" },
 ];
 
 export const settingsNavigation = { href: "/app/settings", label: "Settings" };
@@ -31,14 +31,14 @@ export const platformCatalog: Array<{
     value: "tiktok",
     label: "TikTok",
     shortLabel: "TT",
-    accent: "#101010",
+    accent: "#292928",
     capabilities: ["Short-form video", "Insights", "Scheduling"],
   },
   {
     value: "threads",
     label: "Threads",
     shortLabel: "TH",
-    accent: "#0f172a",
+    accent: "#292928",
     capabilities: ["Text-first publishing", "Reply monitoring"],
   },
   {

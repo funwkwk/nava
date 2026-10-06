@@ -5,18 +5,26 @@ import { useMemo, useState } from "react";
 import {
   ArrowUpRight,
   CalendarDays,
-  CalendarRange,
   Check,
+  ChevronDown,
   CircleHelp,
   Clock3,
+  Eye,
+  Funnel,
+  Hash,
+  ImagePlus,
   Info,
+  Lightbulb,
   MessageCircle,
   MessageSquareText,
   PenLine,
   Plus,
+  Sparkles,
   UsersRound,
   WalletCards,
-} from "lucide-react";
+  WaveHand,
+  X,
+} from "@/components/nava/icons";
 import { z } from "zod";
 import { useNava } from "@/components/nava/nava-provider";
 import {
@@ -90,28 +98,8 @@ function getPlatformAccent(platform: string) {
 
 function surfaceBox(className?: string) {
   return cn(
-    "rounded-[22px] border border-[var(--border-subtle)] bg-[var(--surface-card-alt)]",
+    "rounded-[22px] bg-[var(--surface-card-alt)]",
     className,
-  );
-}
-
-function EmptyDashboardBlock({
-  title,
-  description,
-  icon: Icon,
-}: {
-  title: string;
-  description: string;
-  icon: typeof CalendarRange;
-}) {
-  return (
-    <div className={surfaceBox("flex min-h-[200px] flex-col items-center justify-center p-6 text-center")}>
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#efebe5]">
-        <Icon className="h-5 w-5 text-[var(--muted-foreground)]" />
-      </div>
-      <p className="text-lg font-medium">{title}</p>
-      <p className="mt-2 max-w-sm text-sm leading-7 text-[var(--muted-foreground)]">{description}</p>
-    </div>
   );
 }
 
@@ -175,9 +163,7 @@ export function DashboardPage() {
   const {
     scopedContentItems,
     scopedSocialAccounts,
-    selectedClient,
     sessionUser,
-    state,
     workspace,
   } = useNava();
 
@@ -195,49 +181,25 @@ export function DashboardPage() {
     (account) => account.connectionStatus === "connected",
   );
   const postingGoals = Math.max(scopedContentItems.length - scheduledPosts.length, 0);
-  const templateCards = [
-    {
-      emoji: "💡",
-      title: "Post the tip you gave someone one-on-one",
-      description: "Turn a private insight into a clean, public social post with one strong takeaway.",
-    },
-    {
-      emoji: "📝",
-      title: "Give yourself a report card for the year so far",
-      description: "Package your recent wins, misses, and lessons into one concise reflection thread.",
-    },
-    {
-      emoji: "📌",
-      title: "Defend an opinion most disagree with",
-      description: "Frame a contrarian take clearly, then support it with one proof point and one CTA.",
-    },
-    {
-      emoji: "🔁",
-      title: "Own a belief you've reversed",
-      description: "Explain what changed your perspective and what your audience can learn from it.",
-    },
-  ];
-
   return (
     <div className="space-y-8">
-      <Card className="overflow-hidden border-[var(--border-subtle)] p-0 shadow-none">
-        <div className="flex flex-col gap-4 px-6 py-6 lg:flex-row lg:items-center lg:justify-between">
+      <div className="space-y-4">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f2f4ff] text-2xl">
-              👋
+              <WaveHand className="h-7 w-7 text-[var(--surface-brand)]" />
             </div>
             <div className="space-y-1">
-              <h1 className="text-[2rem] font-semibold tracking-tight">
+              <h1 className="text-2xl font-bold tracking-tight">
                 {getGreeting(sessionUser.name)}
               </h1>
-              <p className="text-sm text-[var(--muted-foreground)]">
+              <p className="text-xs text-[var(--muted-foreground)]">
                 {new Intl.DateTimeFormat("en-US", {
                   weekday: "short",
                   month: "short",
                   day: "numeric",
                   year: "numeric",
                 }).format(new Date())}
-                {selectedClient ? ` · ${selectedClient.name}` : ` · ${workspace.name}`}
               </p>
             </div>
           </div>
@@ -250,7 +212,7 @@ export function DashboardPage() {
           </button>
         </div>
 
-        <div className="grid border-y border-[var(--border-subtle)] lg:grid-cols-3">
+        <div className="grid gap-3 md:grid-cols-3">
           {[
             {
               value: connectedChannels.length,
@@ -267,21 +229,25 @@ export function DashboardPage() {
               label: "Comment Score",
               note: "Pending conversations and reviews stay visible in the workspace.",
             },
-          ].map((stat, index, items) => (
+          ].map((stat) => (
             <div
               key={stat.label}
-              className={cn(
-                "flex items-center gap-4 px-6 py-5",
-                index < items.length - 1 && "border-b border-[var(--border-subtle)] lg:border-b-0 lg:border-r",
-              )}
+              className="flex min-h-28 items-center gap-4 rounded-2xl bg-[var(--surface-card-alt)] px-4 py-4"
             >
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border-4 border-[#e7e1d8] text-2xl font-semibold text-[#525968]">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-[5px] border-[#e7e1d8] bg-white text-2xl font-semibold text-[#525968]">
                 {stat.value}
               </div>
-              <div>
+              <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="text-lg font-medium">{stat.label}</p>
-                  <CircleHelp className="h-4 w-4 text-[var(--muted-foreground)]" />
+                  <button
+                    type="button"
+                    aria-label={`About ${stat.label}`}
+                    title={stat.note}
+                    className="shrink-0 rounded-full text-[var(--muted-foreground)] transition hover:text-foreground"
+                  >
+                    <CircleHelp className="h-4 w-4" />
+                  </button>
                 </div>
                 <p className="mt-1 text-sm text-[var(--muted-foreground)]">{stat.note}</p>
               </div>
@@ -289,19 +255,18 @@ export function DashboardPage() {
           ))}
         </div>
 
-        <div className="flex items-center gap-3 bg-[#dff0ff] px-6 py-4 text-sm text-[#265a82]">
+        <div className="flex items-center gap-3 rounded-2xl bg-[#dff0ff] px-6 py-4 text-sm text-[#265a82]">
           <Info className="h-4 w-4" />
           <p>
             Connect a channel to start tracking your posting streak, goals, and engagement in one
             place.
           </p>
         </div>
-      </Card>
+      </div>
 
       <section className="space-y-4">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-2xl font-semibold tracking-tight">First Steps</h2>
-          <Badge tone="neutral">{state.mode === "demo" ? "Demo walkthrough" : "Workspace setup"}</Badge>
         </div>
 
         <div className="grid gap-4 xl:grid-cols-3">
@@ -330,7 +295,7 @@ export function DashboardPage() {
             const Icon = card.icon;
 
             return (
-              <Card key={card.step} className="space-y-4 p-5 shadow-none">
+              <Card key={card.step} className="space-y-4 bg-[var(--surface-card-alt)] p-5 shadow-none">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-lg font-semibold">{card.step}</p>
@@ -342,13 +307,13 @@ export function DashboardPage() {
                 </div>
                 {card.href ? (
                   <Link href={card.href}>
-                    <Button variant="secondary" size="sm">
+                    <Button variant="ghost" size="sm" className="bg-white hover:bg-white hover:brightness-95">
                       <Icon className="mr-2 h-4 w-4" />
                       {card.buttonLabel}
                     </Button>
                   </Link>
                 ) : (
-                  <Button variant="secondary" size="sm">
+                  <Button variant="ghost" size="sm" className="bg-white hover:bg-white hover:brightness-95">
                     <Icon className="mr-2 h-4 w-4" />
                     {card.buttonLabel}
                   </Button>
@@ -359,88 +324,70 @@ export function DashboardPage() {
         </div>
       </section>
 
-      <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
-        <div className="space-y-3">
-          <h2 className="text-2xl font-semibold tracking-tight">Up Next</h2>
-          {scheduledPosts.length ? (
-            <Card className="space-y-3 p-5 shadow-none">
-              {scheduledPosts.slice(0, 3).map((item) => (
-                <div key={item.id} className={surfaceBox("p-4")}>
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-semibold">{item.title}</p>
-                      <p className="mt-1 text-sm text-[var(--muted-foreground)]">{item.summary}</p>
-                    </div>
-                    <Badge tone={getStatusTone(item.status)}>{item.status}</Badge>
-                  </div>
-                  <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
-                    <CalendarDays className="h-4 w-4" />
-                    <span>{formatDateTime(item.scheduledFor)}</span>
-                  </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {item.platformVariants.map((variant) => (
-                      <SocialPill key={variant.id} platform={variant.platform} />
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </Card>
-          ) : (
-            <EmptyDashboardBlock
-              icon={CalendarRange}
-              title="No posts scheduled yet."
-              description="You'll see upcoming posts here as soon as your queue starts filling."
-            />
-          )}
-        </div>
+      <PublishingTrends items={scopedContentItems} />
+    </div>
+  );
+}
 
-        <div className="space-y-3">
-          <h2 className="text-2xl font-semibold tracking-tight">Comments</h2>
-          {pendingComments.length ? (
-            <Card className="space-y-3 p-5 shadow-none">
-              {pendingComments.slice(0, 3).map((item) => (
-                <div key={item.id} className={surfaceBox("p-4")}>
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-semibold">{item.title}</p>
-                      <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-                        {item.approvalStatus === "pending"
-                          ? "Waiting for feedback before publish."
-                          : "Revisions requested before scheduling."}
-                      </p>
-                    </div>
-                    <Badge tone={getStatusTone(item.approvalStatus)}>{item.approvalStatus}</Badge>
-                  </div>
-                </div>
-              ))}
-            </Card>
-          ) : (
-            <EmptyDashboardBlock
-              icon={MessageCircle}
-              title="No comments yet."
-              description="You'll see the latest comments and review feedback here."
-            />
-          )}
+function PublishingTrends({ items }: { items: Array<{ scheduledFor: string }> }) {
+  const days = 30;
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - 9);
+  const counts = Array.from({ length: days }, (_, index) => {
+    const day = new Date(start);
+    day.setDate(start.getDate() + index);
+    return items.filter((item) => new Date(item.scheduledFor).toDateString() === day.toDateString()).length;
+  });
+  const yMax = Math.max(10, Math.ceil(Math.max(...counts) / 5) * 5);
+  const width = 1000;
+  const height = 260;
+  const left = 36;
+  const bottom = 28;
+  const plotW = width - left - 10;
+  const plotH = height - bottom - 10;
+  const x = (index: number) => left + (plotW * index) / (days - 1);
+  const y = (value: number) => 10 + plotH - (plotH * value) / yMax;
+  const fmt = (offset: number) => {
+    const day = new Date(start);
+    day.setDate(start.getDate() + offset);
+    return day.toLocaleDateString("en-US", { month: "short", day: "2-digit" });
+  };
+  const ticks = [0, 4, 9, 14, 19, 24, 29];
+
+  return (
+    <section className="space-y-4 rounded-2xl bg-[var(--surface-card-alt)] p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold tracking-tight">Publishing Trends</h2>
+        <div className="flex items-center gap-2">
+          <button type="button" className="inline-flex h-9 items-center gap-2 rounded-xl bg-white px-3 text-sm text-[var(--muted-foreground)]">
+            <Funnel className="h-4 w-4" /> Filter By
+          </button>
+          <button type="button" className="inline-flex h-9 min-w-32 items-center justify-between gap-3 rounded-xl bg-white px-3 text-sm">
+            Current <ChevronDown className="h-4 w-4 text-[var(--muted-foreground)]" />
+          </button>
         </div>
       </div>
-
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold tracking-tight">Templates</h2>
-        <div className="grid gap-4 xl:grid-cols-4">
-          {templateCards.map((card) => (
-            <Card key={card.title} className="space-y-4 p-5 shadow-none">
-              <div className="text-xl">{card.emoji}</div>
-              <div>
-                <p className="text-[1.15rem] font-semibold leading-8">{card.title}</p>
-                <p className="mt-2 text-sm leading-7 text-[var(--muted-foreground)]">
-                  {card.description}
-                </p>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </section>
-    </div>
+      <p className="text-sm">Total Posts : {counts.reduce((sum, value) => sum + value, 0)}</p>
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full" role="img" aria-label="Publishing trends chart">
+        {Array.from({ length: yMax + 1 }, (_, value) => value).filter((value) => value % (yMax / 10) === 0).map((value) => (
+          <g key={value}>
+            <line x1={left} x2={width - 10} y1={y(value)} y2={y(value)} stroke="#e6e3dd" />
+            <text x={left - 8} y={y(value) + 4} textAnchor="end" fontSize="12" fill="#525968">{value}</text>
+          </g>
+        ))}
+        {ticks.map((tick) => (
+          <g key={tick}>
+            <line x1={x(tick)} x2={x(tick)} y1={10} y2={10 + plotH} stroke="#e6e3dd" />
+            <text x={x(tick)} y={height - 8} textAnchor="middle" fontSize="12" fill="#525968">{tick === 9 ? "today" : fmt(tick)}</text>
+          </g>
+        ))}
+        <polyline fill="none" stroke="#0f67ea" strokeWidth="2" strokeLinejoin="round" points={counts.map((value, index) => `${x(index)},${y(value)}`).join(" ")} />
+        {counts.map((value, index) => (
+          <circle key={index} cx={x(index)} cy={y(value)} r="2.5" fill="#0f67ea" />
+        ))}
+      </svg>
+    </section>
   );
 }
 
@@ -448,6 +395,8 @@ export function PostsPage() {
   const { addContentItem, scopedContentItems, selectedClient, sessionUser, state, workspace } = useNava();
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [view, setView] = useState<"board" | "gallery">("board");
   const [form, setForm] = useState({
     title: "",
     summary: "",
@@ -504,6 +453,7 @@ export function PostsPage() {
       scheduledFor: new Date(result.data.scheduledFor).toISOString(),
     });
     setFeedback("Post created and added to the list.");
+    setComposerOpen(false);
     setForm((previous) => ({
       ...previous,
       title: "",
@@ -515,154 +465,337 @@ export function PostsPage() {
     return null;
   }
 
+  const columns = [
+    { status: "idea", title: "Ideas" },
+    { status: "draft", title: "To Do" },
+    { status: "scheduled", title: "In Progress" },
+    { status: "published", title: "Done" },
+  ] as const;
+
   return (
     <div className="space-y-6">
-      <SectionHeading
-        eyebrow="Posts"
-        title={selectedClient ? `${selectedClient.name} posts` : "Post library"}
-        description="Manage your publishing backlog, attach platform variants, and keep scheduling context visible without clutter."
-        actions={<Badge tone="neutral">{scopedContentItems.length} posts</Badge>}
-      />
-
-      <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
-        <Card className="space-y-5 p-6 shadow-none">
-          <div className="space-y-2">
-            <h2 className="text-2xl font-semibold tracking-tight">Create a post</h2>
-            <p className="text-sm leading-7 text-[var(--muted-foreground)]">
-              Build one post object first, then attach channel-ready variations for each target.
-            </p>
-          </div>
-
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <Input
-              placeholder="Post title"
-              value={form.title}
-              onChange={(event) => updateField("title", event.target.value)}
-            />
-            <Textarea
-              placeholder="What is this post about?"
-              value={form.summary}
-              onChange={(event) => updateField("summary", event.target.value)}
-            />
-            <div className="grid gap-4 md:grid-cols-2">
-              <Input
-                placeholder="Content pillar"
-                value={form.pillar}
-                onChange={(event) => updateField("pillar", event.target.value)}
-              />
-              <Input
-                placeholder="Objective"
-                value={form.objective}
-                onChange={(event) => updateField("objective", event.target.value)}
-              />
+      <header className="flex flex-col justify-between gap-5 border-b border-[var(--border-subtle)] pb-5 md:flex-row md:items-center">
+        <div>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-white">
+              <Lightbulb className="h-5 w-5 text-foreground" />
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <Input
-                type="datetime-local"
-                value={form.scheduledFor}
-                onChange={(event) => updateField("scheduledFor", event.target.value)}
-              />
-              {sessionUser?.accountType === "agency" ? (
-                <Select
-                  value={form.clientId}
-                  onChange={(event) => updateField("clientId", event.target.value)}
-                >
-                  <option value="">Use active client</option>
-                  {state.clients.map((client) => (
-                    <option key={client.id} value={client.id}>
-                      {client.name}
-                    </option>
-                  ))}
-                </Select>
-              ) : null}
-            </div>
-
-            <div className="space-y-3">
-              <p className="text-sm font-semibold text-[var(--muted-foreground)]">Choose channels</p>
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                {platformCatalog.map((platform) => {
-                  const active = form.platforms.includes(platform.value);
-
-                  return (
-                    <button
-                      key={platform.value}
-                      type="button"
-                      className={cn(
-                        surfaceBox("px-4 py-3 text-left transition"),
-                        active
-                          ? "border-[var(--surface-brand)] bg-[var(--surface-brand-soft)]"
-                          : "hover:border-[var(--border-strong)]",
-                      )}
-                      onClick={() => togglePlatform(platform.value)}
-                    >
-                      <p className="font-semibold">{platform.label}</p>
-                      <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-                        {platform.capabilities[0]}
-                      </p>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-            {feedback ? <p className="text-sm text-[var(--surface-brand)]">{feedback}</p> : null}
-
-            <Button type="submit">Create Post</Button>
-          </form>
-        </Card>
-
-        <Card className="space-y-4 p-6 shadow-none">
-          <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight">Post list</h2>
-              <p className="mt-1 text-sm leading-7 text-[var(--muted-foreground)]">
-                Clean, table-like cards designed to feel less like generated UI and more like a real product workspace.
+              <h1 className="text-2xl font-semibold tracking-tight">Create</h1>
+              <p className="text-sm text-[var(--muted-foreground)]">
+                {selectedClient ? `${selectedClient.name} content` : "Plan and organize your content"}
               </p>
             </div>
-            <Badge tone="brand">{scopedContentItems.length}</Badge>
           </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/app/content"
+            className="inline-flex h-10 items-center rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-card)] px-4 text-sm font-medium transition hover:bg-[var(--surface-card-alt)]"
+          >
+            <Sparkles className="mr-2 h-4 w-4" />
+            Templates
+          </Link>
+          <Button size="sm" onClick={() => setComposerOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            New Idea
+          </Button>
+        </div>
+      </header>
 
-          {scopedContentItems.length ? (
-            <div className="space-y-3">
-              {scopedContentItems.map((item) => (
-                <div key={item.id} className={surfaceBox("p-4")}>
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <p className="text-lg font-semibold">{item.title}</p>
-                      <p className="mt-1 text-sm leading-7 text-[var(--muted-foreground)]">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-5 text-sm">
+          <button type="button" className="border-b-2 border-[var(--surface-brand)] px-1 py-2 font-semibold">
+            Board
+          </button>
+          <Link href="/app/calendar" className="px-1 py-2 text-[var(--muted-foreground)] hover:text-foreground">
+            Calendar
+          </Link>
+          <Link href="/app/content" className="px-1 py-2 text-[var(--muted-foreground)] hover:text-foreground">
+            Templates
+          </Link>
+          <span className="hidden px-1 py-2 text-[var(--muted-foreground)] sm:block">Feeds</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-2 rounded-lg border border-[var(--border-subtle)] px-3 py-2 text-sm text-[var(--muted-foreground)]">
+            <Hash className="h-4 w-4" />
+            Tags
+          </span>
+          <div className="flex rounded-lg border border-[var(--border-subtle)] p-1">
+            {(["board", "gallery"] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                aria-pressed={view === mode}
+                onClick={() => setView(mode)}
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-sm capitalize transition",
+                  view === mode ? "bg-[var(--surface-accent)] text-[var(--surface-accent-foreground)]" : "text-[var(--muted-foreground)]",
+                )}
+              >
+                {mode === "board" ? "Board" : "Gallery"}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {feedback ? (
+        <p role="status" className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          {feedback}
+        </p>
+      ) : null}
+
+      {view === "board" ? (
+        <div className="grid min-h-[560px] gap-4 overflow-x-auto pb-2 md:grid-cols-2 xl:grid-cols-4">
+          {columns.map((column) => {
+            const items = scopedContentItems.filter((item) => item.status === column.status);
+
+            return (
+              <section key={column.status} className="min-w-0 rounded-xl bg-[var(--surface-card-alt)] p-3">
+                <div className="mb-3 flex items-center justify-between px-1">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-semibold">{column.title}</h2>
+                    <span className="rounded-full bg-[#e9e7e3] px-2 py-0.5 text-xs font-medium text-[var(--muted-foreground)]">
+                      {items.length}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label={`Add to ${column.title}`}
+                    onClick={() => setComposerOpen(true)}
+                    className="rounded-md p-1 text-[var(--muted-foreground)] hover:bg-white"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {items.map((item) => (
+                    <article key={item.id} className="rounded-lg border border-[var(--border-subtle)] bg-white p-3.5 shadow-[0_2px_8px_rgba(28,31,38,0.03)]">
+                      <div className="mb-3 flex items-center gap-1.5">
+                        {item.platformVariants.slice(0, 3).map((variant) => (
+                          <span
+                            key={variant.id}
+                            title={getPlatformLabel(variant.platform)}
+                            className="flex h-6 w-6 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                            style={{ backgroundColor: getPlatformAccent(variant.platform) }}
+                          >
+                            {platformCatalog.find((platform) => platform.value === variant.platform)?.shortLabel}
+                          </span>
+                        ))}
+                        <span className="ml-auto text-[11px] text-[var(--muted-foreground)]">
+                          {item.pillar}
+                        </span>
+                      </div>
+                      <h3 className="text-sm font-semibold leading-5">{item.title}</h3>
+                      <p className="mt-1.5 line-clamp-3 text-xs leading-5 text-[var(--muted-foreground)]">
                         {item.summary}
                       </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge tone={getStatusTone(item.status)}>{item.status}</Badge>
-                      <Badge tone={getStatusTone(item.approvalStatus)}>{item.approvalStatus}</Badge>
-                    </div>
+                      <div className="mt-3 flex items-center justify-between border-t border-[var(--border-subtle)] pt-3 text-xs text-[var(--muted-foreground)]">
+                        <span className="inline-flex items-center gap-1">
+                          <Clock3 className="h-3.5 w-3.5" />
+                          {formatDateTime(item.scheduledFor)}
+                        </span>
+                        <span>{item.objective}</span>
+                      </div>
+                    </article>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setComposerOpen(true)}
+                    className="flex w-full items-center justify-center gap-2 rounded-lg py-3 text-sm text-[var(--muted-foreground)] transition hover:bg-white hover:text-foreground"
+                  >
+                    <Plus className="h-4 w-4" />
+                    New Idea
+                  </button>
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {scopedContentItems.map((item) => (
+            <article key={item.id} className="rounded-xl border border-[var(--border-subtle)] bg-white p-4">
+              <div className="mb-3 flex items-center gap-2">
+                {item.platformVariants.map((variant) => <SocialPill key={variant.id} platform={variant.platform} />)}
+              </div>
+              <h2 className="font-semibold">{item.title}</h2>
+              <p className="mt-2 line-clamp-4 text-sm leading-6 text-[var(--muted-foreground)]">{item.summary}</p>
+              <p className="mt-4 text-xs text-[var(--muted-foreground)]">{formatDateTime(item.scheduledFor)}</p>
+            </article>
+          ))}
+          <button
+            type="button"
+            onClick={() => setComposerOpen(true)}
+            className="min-h-44 rounded-xl border border-dashed border-[var(--border-strong)] text-sm text-[var(--muted-foreground)] hover:bg-[var(--surface-card-alt)]"
+          >
+            <Plus className="mx-auto mb-2 h-5 w-5" />
+            New Idea
+          </button>
+        </div>
+      )}
+
+      {composerOpen ? (
+        <div
+          role="presentation"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#292928]/75 p-3 sm:p-6"
+          onClick={() => setComposerOpen(false)}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="composer-title"
+            className="flex max-h-[94vh] w-full max-w-[1050px] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                setComposerOpen(false);
+              }
+            }}
+          >
+            <header className="flex items-center justify-between border-b border-[var(--border-subtle)] px-5 py-3.5 sm:px-7">
+              <div className="flex items-center gap-3">
+                <h2 id="composer-title" className="font-semibold">Create Post</h2>
+                <span className="rounded-lg border border-[var(--border-subtle)] px-3 py-1.5 text-xs text-[var(--muted-foreground)]">
+                  Tags <span className="ml-1">⌄</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="hidden items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm text-[var(--muted-foreground)] sm:flex">
+                  <Sparkles className="h-4 w-4" /> AI Assistant
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--surface-accent)] px-3 py-1.5 text-sm font-medium text-[var(--surface-accent-foreground)]">
+                  <Eye className="h-4 w-4" /> Preview
+                </span>
+                <button
+                  type="button"
+                  aria-label="Close post editor"
+                  onClick={() => setComposerOpen(false)}
+                  className="rounded-lg p-2 text-[var(--muted-foreground)] hover:bg-[var(--surface-card-alt)]"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </header>
+
+            <div className="grid min-h-0 flex-1 overflow-y-auto md:grid-cols-[1.7fr_1fr]">
+              <form id="post-form" className="flex flex-col gap-4 p-5 sm:p-7" onSubmit={handleSubmit}>
+                <div className="flex flex-wrap gap-2">
+                  {platformCatalog.map((platform) => {
+                    const active = form.platforms.includes(platform.value);
+                    return (
+                      <button
+                        key={platform.value}
+                        type="button"
+                        aria-pressed={active}
+                        title={platform.label}
+                        onClick={() => togglePlatform(platform.value)}
+                        className={cn(
+                          "flex h-9 w-9 items-center justify-center rounded-lg border text-[11px] font-bold transition",
+                          active ? "border-[var(--border-strong)] bg-[var(--surface-card-alt)] text-foreground" : "border-[var(--border-subtle)] text-[var(--muted-foreground)] hover:bg-[var(--surface-card-alt)]",
+                        )}
+                      >
+                        {platform.shortLabel}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="space-y-3 rounded-xl border border-[var(--border-subtle)] p-4">
+                  <label className="block">
+                    <span className="sr-only">Post title</span>
+                    <Input
+                      placeholder="Give your post a title"
+                      value={form.title}
+                      onChange={(event) => updateField("title", event.target.value)}
+                      className="rounded-lg border-0 px-1 shadow-none focus:ring-0"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="sr-only">Post content</span>
+                    <Textarea
+                      placeholder="Start writing or get inspired with Templates"
+                      value={form.summary}
+                      onChange={(event) => updateField("summary", event.target.value)}
+                      className="min-h-32 rounded-lg border-0 px-1 shadow-none focus:ring-0"
+                    />
+                  </label>
+                  <div className="flex h-24 w-24 flex-col items-center justify-center rounded-lg border border-dashed border-[var(--border-strong)] text-center text-xs text-[var(--muted-foreground)]">
+                    <ImagePlus className="mb-1 h-5 w-5" />
+                    Add media
                   </div>
-                  <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-[var(--muted-foreground)]">
-                    <Clock3 className="h-4 w-4" />
-                    <span>{formatDateTime(item.scheduledFor)}</span>
-                    <span>·</span>
-                    <span>{item.objective}</span>
-                    <span>·</span>
-                    <span>{item.pillar}</span>
-                  </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {item.platformVariants.map((variant) => (
-                      <SocialPill key={variant.id} platform={variant.platform} />
-                    ))}
+                  <div className="flex items-center gap-3 border-t border-[var(--border-subtle)] pt-3 text-[var(--muted-foreground)]">
+                    <Plus className="h-4 w-4" />
+                    <span>⌄</span>
+                    <span className="h-5 border-l border-[var(--border-subtle)]" />
+                    <span aria-label="Add emoji">☺</span>
+                    <Hash className="h-4 w-4" />
                   </div>
                 </div>
-              ))}
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className="space-y-1.5 text-xs font-medium text-[var(--muted-foreground)]">
+                    Content pillar
+                    <Input value={form.pillar} onChange={(event) => updateField("pillar", event.target.value)} className="rounded-lg py-2.5" />
+                  </label>
+                  <label className="space-y-1.5 text-xs font-medium text-[var(--muted-foreground)]">
+                    Publish date
+                    <Input type="datetime-local" value={form.scheduledFor} onChange={(event) => updateField("scheduledFor", event.target.value)} className="rounded-lg py-2.5" />
+                  </label>
+                  {sessionUser?.accountType === "agency" ? (
+                    <label className="space-y-1.5 text-xs font-medium text-[var(--muted-foreground)]">
+                      Client
+                      <Select value={form.clientId} onChange={(event) => updateField("clientId", event.target.value)} className="rounded-lg py-2.5">
+                        <option value="">Use active client</option>
+                        {state.clients.map((client) => <option key={client.id} value={client.id}>{client.name}</option>)}
+                      </Select>
+                    </label>
+                  ) : null}
+                  <label className="space-y-1.5 text-xs font-medium text-[var(--muted-foreground)]">
+                    Objective
+                    <Input value={form.objective} onChange={(event) => updateField("objective", event.target.value)} className="rounded-lg py-2.5" />
+                  </label>
+                </div>
+                {error ? <p role="alert" className="text-sm text-rose-600">{error}</p> : null}
+              </form>
+
+              <aside className="flex min-h-64 flex-col border-t border-[var(--border-subtle)] bg-[var(--surface-card-alt)] p-5 sm:p-7 md:border-l md:border-t-0">
+                <h3 className="text-sm font-semibold">Post Previews</h3>
+                <div className="flex flex-1 flex-col items-center justify-center py-6 text-center">
+                  <div className="mb-4 flex h-44 w-36 flex-col rounded-xl border border-[var(--border-subtle)] bg-white p-3 text-left shadow-sm">
+                    <div className="mb-3 flex items-center gap-2 border-b border-[var(--border-subtle)] pb-2">
+                      <div className="h-5 w-5 rounded-full bg-[var(--surface-card-alt)]" />
+                      <div className="h-2 w-16 rounded-full bg-[var(--surface-card-alt)]" />
+                    </div>
+                    <div className="flex flex-1 items-center justify-center rounded-md bg-[var(--surface-card-alt)] text-[var(--muted-foreground)]">
+                      <ImagePlus className="h-6 w-6 opacity-50" />
+                    </div>
+                    <div className="mt-3 h-2 w-4/5 rounded-full bg-[var(--surface-card-alt)]" />
+                    <div className="mt-1.5 h-2 w-3/5 rounded-full bg-[var(--surface-card-alt)]" />
+                  </div>
+                  <p className="text-sm font-medium">
+                    {form.title || "See your post's preview here"}
+                  </p>
+                  <p className="mt-1 max-w-xs text-xs leading-5 text-[var(--muted-foreground)]">
+                    {form.summary || "Choose a channel and start writing to preview how your post will look."}
+                  </p>
+                </div>
+              </aside>
             </div>
-          ) : (
-            <EmptyState
-              title="No posts in this scope yet"
-              description="Create your first post to start filling the calendar and dashboard."
-            />
-          )}
-        </Card>
-      </div>
+
+            <footer className="flex items-center justify-between border-t border-[var(--border-subtle)] px-5 py-3.5 sm:px-7">
+              <button type="button" onClick={() => setComposerOpen(false)} className="text-sm font-medium text-[var(--muted-foreground)]">
+                Cancel
+              </button>
+              <Button type="submit" form="post-form" size="sm">
+                Save Draft
+              </Button>
+            </footer>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }

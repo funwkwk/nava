@@ -2,7 +2,7 @@
 
 :root {
   --background: #f5f3ef;
-  --foreground: #1c1f26;
+  --foreground: #292928;
   --muted-foreground: #6c7485;
   --surface-canvas: #f5f3ef;
   --surface-card: #ffffff;
@@ -68,6 +68,13 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+button:enabled,
+a[href],
+select:enabled,
+[role="button"] {
+  cursor: pointer;
 }
 
 a {

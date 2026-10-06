@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "@/components/nava/icons";
 import { z } from "zod";
 import { useNava } from "@/components/nava/nava-provider";
 import { Badge, Button, Card, Input, SectionHeading, Textarea, cn } from "@/components/nava/ui";

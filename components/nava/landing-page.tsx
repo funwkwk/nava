@@ -7,7 +7,7 @@ import {
   ShieldCheck,
   Sparkles,
   Workflow,
-} from "lucide-react";
+} from "@/components/nava/icons";
 import { Badge, Card, cn } from "@/components/nava/ui";
 
 const featureCards = [

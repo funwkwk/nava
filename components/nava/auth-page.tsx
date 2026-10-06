@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowRight, Lock, Mail, ShieldCheck } from "lucide-react";
+import { ArrowRight, Lock, Mail, ShieldCheck } from "@/components/nava/icons";
 import { z } from "zod";
 import { useNava } from "@/components/nava/nava-provider";
 import { Badge, Button, Card, Input, Select } from "@/components/nava/ui";
