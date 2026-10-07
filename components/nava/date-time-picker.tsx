@@ -70,7 +70,7 @@ export function DateTimePicker({
     "h-9 w-full cursor-pointer appearance-none rounded-xl bg-[var(--surface-card-alt)] px-3 text-center text-sm outline-none";
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative w-fit max-w-full">
       <button
         type="button"
         aria-expanded={open}

@@ -71,6 +71,9 @@ import {
   faLinkedin,
   faMicrosoft,
   faThreads,
+  faXTwitter,
+  faBluesky,
+  faSubstack,
   faTiktok,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
@@ -161,6 +164,9 @@ export const Facebook = make(faFacebook);
 export const Instagram = make(faInstagram);
 export const Linkedin = make(faLinkedin);
 export const Threads = make(faThreads);
+export const XTwitter = make(faXTwitter);
+export const Bluesky = make(faBluesky);
+export const Substack = make(faSubstack);
 export const Tiktok = make(faTiktok);
 export const Youtube = make(faYoutube);
 export const ChevronLeft = make(faChevronLeft);

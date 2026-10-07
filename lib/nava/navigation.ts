@@ -62,4 +62,25 @@ export const platformCatalog: Array<{
     accent: "#FF0000",
     capabilities: ["Video publishing", "Channel performance"],
   },
+  {
+    value: "x",
+    label: "X",
+    shortLabel: "X",
+    accent: "#292928",
+    capabilities: ["Short posts", "Replies"],
+  },
+  {
+    value: "bluesky",
+    label: "Bluesky",
+    shortLabel: "BS",
+    accent: "#1185FE",
+    capabilities: ["Short posts", "Replies"],
+  },
+  {
+    value: "substack",
+    label: "Substack",
+    shortLabel: "SS",
+    accent: "#FF6719",
+    capabilities: ["Newsletters", "Notes"],
+  },
 ];

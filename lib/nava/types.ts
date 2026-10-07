@@ -5,7 +5,10 @@ export type Platform =
   | "threads"
   | "facebook"
   | "linkedin"
-  | "youtube";
+  | "youtube"
+  | "x"
+  | "bluesky"
+  | "substack";
 export type ConnectionStatus = "connected" | "attention";
 export type ContentStatus = "idea" | "draft" | "scheduled" | "published";
 export type ApprovalStatus =

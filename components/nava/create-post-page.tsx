@@ -28,6 +28,9 @@ import {
   Smile,
   Sparkles,
   Threads,
+  XTwitter,
+  Bluesky,
+  Substack,
   Tiktok,
   Youtube,
 } from "@/components/nava/icons";
@@ -48,6 +51,9 @@ const platforms: Array<{
   { value: "linkedin", label: "LinkedIn", Icon: Linkedin, color: "#3A66AE" },
   { value: "youtube", label: "YouTube", Icon: Youtube, color: "#EE3124" },
   { value: "threads", label: "Threads", Icon: Threads, color: "#292928" },
+  { value: "x", label: "X", Icon: XTwitter, color: "#292928" },
+  { value: "bluesky", label: "Bluesky", Icon: Bluesky, color: "#1185FE" },
+  { value: "substack", label: "Substack", Icon: Substack, color: "#FF6719" },
 ];
 
 const schema = z.object({
@@ -91,29 +97,6 @@ function useDismiss<T extends HTMLElement>(open: boolean, close: () => void) {
   }, [open, close]);
 
   return ref;
-}
-
-function GroupsButton() {
-  const [open, setOpen] = useState(false);
-  const ref = useDismiss<HTMLDivElement>(open, () => setOpen(false));
-
-  return (
-    <div ref={ref} className="relative mt-auto pt-4">
-      <button
-        type="button"
-        aria-expanded={open}
-        onClick={() => setOpen((previous) => !previous)}
-        className="flex h-10 w-full items-center justify-center rounded-lg bg-[var(--surface-card-alt)] text-sm font-medium hover:brightness-95"
-      >
-        Groups
-      </button>
-      {open ? (
-        <div className="absolute bottom-full left-0 z-30 mb-2 w-full rounded-2xl bg-white p-3 text-sm text-[var(--muted-foreground)] shadow-[0_12px_32px_rgba(41,41,40,0.16)]">
-          No groups yet.
-        </div>
-      ) : null}
-    </div>
-  );
 }
 
 export function CreatePostPage() {
@@ -249,8 +232,11 @@ export function CreatePostPage() {
         event.preventDefault();
         publish(form.scheduledFor);
       }}
-      className="grid gap-4 lg:h-[calc(100vh-2rem)] lg:grid-cols-[260px_minmax(0,1fr)_320px]"
+      className="grid gap-4 lg:h-[calc(100vh-2rem)] lg:grid-cols-[minmax(0,1fr)_320px]"
     >
+
+      <div className="flex min-h-0 flex-col gap-4">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto">
       <aside className="flex flex-col rounded-[24px] bg-white p-5">
         <h2 className="mb-3 text-base font-semibold">Accounts</h2>
         <div className="mb-4">
@@ -280,11 +266,8 @@ export function CreatePostPage() {
             );
           })}
         </div>
-        <GroupsButton />
       </aside>
-
-      <div className="flex min-h-0 flex-col gap-4">
-        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto">
+        <div className="space-y-4">
           <Panel title="Media">
             <input
               ref={fileInput}
@@ -411,6 +394,7 @@ export function CreatePostPage() {
             </div>
           </Panel>
           {error ? <p role="alert" className="px-2 text-sm text-rose-600">{error}</p> : null}
+        </div>
         </div>
 
         <footer className="flex shrink-0 items-center justify-end gap-2 rounded-[24px] bg-white px-4 py-3">
