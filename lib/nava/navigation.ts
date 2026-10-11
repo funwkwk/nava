@@ -2,7 +2,8 @@ import type { Platform } from "@/lib/nava/types";
 
 export const workspaceNavigation = [
   { href: "/app", label: "Dashboard" },
-  { href: "/app/posts", label: "Posts" },
+  { href: "/app/posts", label: "Task" },
+  { href: "/app/approval", label: "Post" },
   { href: "/app/calendar", label: "Calendar" },
   { href: "/app/accounts", label: "Accounts" },
   { href: "/app/groups", label: "Groups" },

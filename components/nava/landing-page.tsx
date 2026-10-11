@@ -62,7 +62,7 @@ export function LandingPage() {
               Signup
             </Link>
             <Link
-              className="inline-flex items-center gap-2 rounded-2xl bg-[var(--surface-brand)] px-4 py-2 font-medium text-white transition hover:bg-[var(--surface-brand-strong)]"
+              className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border-subtle)] bg-white px-4 py-2 font-medium text-foreground transition hover:bg-[var(--surface-card-alt)]"
               href="/signup"
             >
               Launch workspace
@@ -107,7 +107,7 @@ export function LandingPage() {
                 <Link
                   href="/signup"
                   className={cn(
-                    "inline-flex items-center gap-2 rounded-2xl bg-[var(--surface-brand)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[var(--surface-brand-strong)]",
+                    "inline-flex items-center gap-2 rounded-2xl border border-[var(--border-subtle)] bg-white px-5 py-3 text-sm font-medium text-foreground transition hover:bg-[var(--surface-card-alt)]",
                   )}
                 >
                   Start onboarding

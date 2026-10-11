@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ApprovalPage } from "@/components/nava/workspace-pages";
 
 export const metadata: Metadata = {
-  title: "Approval",
+  title: "Post",
 };
 
 export default function ApprovalRoute() {

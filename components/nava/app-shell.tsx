@@ -8,6 +8,7 @@ import {
   Bell,
   CalendarRange,
   ChartColumnBig,
+  CheckCircle2,
   CircleUserRound,
   FolderKanban,
   Inbox,
@@ -23,13 +24,15 @@ import {
   Tiktok,
 } from "@/components/nava/icons";
 import { ClientMenu, ProfileMenu } from "@/components/nava/header-menus";
+import { ConnectChannelDialog } from "@/components/nava/connect-channel-dialog";
 import { useNava } from "@/components/nava/nava-provider";
 import { Button, EmptyState, cn } from "@/components/nava/ui";
 import { workspaceNavigation } from "@/lib/nava/navigation";
 
 const navIcons = {
   "/app": LayoutDashboard,
-  "/app/posts": FolderKanban,
+  "/app/posts": CheckCircle2,
+  "/app/approval": FolderKanban,
   "/app/calendar": CalendarRange,
   "/app/accounts": CircleUserRound,
   "/app/groups": UsersRound,
@@ -43,6 +46,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { ready, sessionUser, state, workspace, selectClient, logout, scopedSocialAccounts } = useNava();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isStuck, setIsStuck] = useState(false);
+  const [connectChannelOpen, setConnectChannelOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setIsStuck(window.scrollY > 16);
@@ -157,7 +161,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         <nav className={cn("grid grid-cols-2 gap-1 md:block md:space-y-1", isSidebarCollapsed && "md:space-y-2")}>
           {navigation.map((item) => {
             const active =
-              item.href === "/app" ? pathname === "/app" : pathname.startsWith(item.href);
+              item.href === "/app"
+                ? pathname === "/app"
+                : item.href === "/app/posts"
+                  ? pathname === "/app/posts"
+                  : pathname.startsWith(item.href);
             const Icon = navIcons[item.href as keyof typeof navIcons];
 
             return (
@@ -204,17 +212,20 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <Icon className="h-[18px] w-[18px]" color="#ffffff" />
               </Link>
             ))}
-            <Link
-              href="/app/accounts"
+            <button
+              type="button"
+              onClick={() => setConnectChannelOpen(true)}
               aria-label="Connect another channel"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-card)] text-[var(--muted-foreground)]"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-card)] text-[var(--muted-foreground)] transition hover:bg-[var(--surface-card-alt)]"
             >
               <Plus className="h-4 w-4" />
-            </Link>
+            </button>
           </div>
         </div>
 
       </aside>
+
+      <ConnectChannelDialog open={connectChannelOpen} onClose={() => setConnectChannelOpen(false)} />
 
       <section className="min-w-0 flex-1">
         <div className="mx-auto flex max-w-[1440px] flex-col gap-4">

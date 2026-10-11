@@ -36,9 +36,12 @@ Open http://localhost:3000.
 The UI works immediately in demo mode. Demo mode:
 
 - persists local workspace state in browser storage
-- seeds believable content, audit, and insight data
+- persists posts, tasks, account groups, contacts, and demo conversations in browser storage
+- seeds clearly identified sample content and task data for previewing client workflows
 - clearly labels seeded metrics and connections as demo data
 - does not pretend social or email integrations are live
+
+The current social account, publishing, inbox, and analytics screens use local demo records. OAuth, provider publishing, file storage, live comments/messages, and social performance metrics require external provider integrations and are not active. Composer media previews remain in the current browser session and are not uploaded or attached to saved post records.
 
 To prepare live Supabase wiring, copy the example environment file and add your project values:
 

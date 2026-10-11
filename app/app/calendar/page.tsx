@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CalendarPage } from "@/components/nava/workspace-pages";
 
 export const metadata: Metadata = {
-  title: "Calender",
+  title: "Calendar",
 };
 
 export default function CalendarRoute() {

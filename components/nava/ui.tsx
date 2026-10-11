@@ -14,7 +14,7 @@ export function cn(...values: Array<string | false | null | undefined>) {
 
 const buttonVariants = {
   primary:
-    "bg-[var(--surface-brand)] text-white shadow-[var(--shadow-soft)] hover:bg-[var(--surface-brand-strong)]",
+    "border border-[var(--border-subtle)] bg-white text-foreground hover:bg-[var(--surface-card-alt)]",
   secondary:
     "border border-[var(--border-subtle)] bg-[var(--surface-card)] text-foreground hover:border-[var(--border-strong)] hover:bg-[var(--surface-card-alt)]",
   ghost: "bg-transparent text-foreground hover:bg-[var(--surface-card-alt)]",
@@ -41,7 +41,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     <button
       ref={ref}
       className={cn(
-        "inline-flex items-center justify-center rounded-2xl font-medium transition duration-150 focus:outline-none focus:ring-2 focus:ring-[var(--surface-brand)] focus:ring-offset-2 focus:ring-offset-transparent disabled:cursor-not-allowed disabled:opacity-60",
+        "inline-flex items-center justify-center rounded-2xl font-medium transition duration-150 focus:outline-none focus:ring-2 focus:ring-[var(--border-strong)] focus:ring-offset-2 focus:ring-offset-transparent disabled:cursor-not-allowed disabled:opacity-60",
         buttonVariants[variant],
         buttonSizes[size],
         fullWidth && "w-full",
@@ -91,7 +91,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-[24px] bg-[var(--surface-card)] p-6 shadow-[var(--shadow-card)]",
+        "rounded-[24px] bg-[var(--surface-card)] !p-5 shadow-[var(--shadow-card)]",
         className,
       )}
       {...props}

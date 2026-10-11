@@ -9,7 +9,7 @@ export type Platform =
   | "x"
   | "bluesky"
   | "substack";
-export type ConnectionStatus = "connected" | "attention";
+export type ConnectionStatus = "connected" | "attention" | "disconnected" | "expired" | "error";
 export type ContentStatus = "idea" | "draft" | "scheduled" | "published";
 export type ApprovalStatus =
   | "not-required"
@@ -52,6 +52,7 @@ export interface SocialAccount {
   connectionStatus: ConnectionStatus;
   capabilities: string[];
   postsThisWeek: number;
+  dataSource: "demo" | "live";
 }
 
 export interface ContentVariant {
@@ -74,6 +75,63 @@ export interface ContentItem {
   approvalStatus: ApprovalStatus;
   scheduledFor: string;
   platformVariants: ContentVariant[];
+}
+
+export type TaskStatus = "todo" | "in-progress" | "in-review" | "done";
+export type TaskPriority = "low" | "medium" | "high";
+
+export interface WorkspaceTask {
+  id: string;
+  workspaceId: string;
+  title: string;
+  description: string;
+  clientId: string | null;
+  relatedPostId: string | null;
+  assignee: string;
+  priority: TaskPriority;
+  status: TaskStatus;
+  dueDate: string;
+  labels: string[];
+  comments: string[];
+}
+
+export interface AccountGroup {
+  id: string;
+  workspaceId: string;
+  clientId: string | null;
+  name: string;
+  description: string;
+  accountIds: string[];
+  members: string[];
+}
+
+export interface WorkspaceContact {
+  id: string;
+  workspaceId: string;
+  clientId: string | null;
+  name: string;
+  username: string;
+  platform: Platform;
+  tags: string[];
+  assignee: string;
+  lastInteraction: string;
+  notes: string;
+}
+
+export interface WorkspaceConversation {
+  id: string;
+  workspaceId: string;
+  clientId: string | null;
+  contactName: string;
+  platform: Platform;
+  kind: "public-comment" | "private-message";
+  preview: string;
+  messages: string[];
+  unread: boolean;
+  status: "open" | "resolved";
+  priority: TaskPriority;
+  assignee: string;
+  replySupported: boolean;
 }
 
 export interface AuditFinding {
@@ -113,6 +171,10 @@ export interface NavaState {
   clients: Client[];
   socialAccounts: SocialAccount[];
   contentItems: ContentItem[];
+  tasks: WorkspaceTask[];
+  groups: AccountGroup[];
+  contacts: WorkspaceContact[];
+  conversations: WorkspaceConversation[];
   auditFindings: AuditFinding[];
   insightKpis: InsightKpi[];
   activities: ActivityItem[];
@@ -136,4 +198,7 @@ export interface ContentCreateInput {
   scheduledFor: string;
   platforms: Platform[];
   clientId: string | null;
+  status?: ContentStatus;
 }
+
+export type TaskCreateInput = Omit<WorkspaceTask, "id" | "workspaceId" | "comments">;

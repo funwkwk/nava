@@ -179,7 +179,7 @@ export function DateTimePicker({
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="h-9 shrink-0 rounded-xl bg-[var(--surface-brand)] px-4 text-sm font-medium text-white hover:bg-[var(--surface-brand-strong)]"
+              className="h-9 shrink-0 rounded-xl border border-[var(--border-subtle)] bg-white px-4 text-sm font-medium text-foreground hover:bg-[var(--surface-card-alt)]"
             >
               Done
             </button>

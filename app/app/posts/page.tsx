@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { PostsPage } from "@/components/nava/workspace-pages";
+import { TaskPage } from "@/components/nava/workspace-pages";
 
 export const metadata: Metadata = {
-  title: "Posts",
+  title: "Tasks",
 };
 
 export default function PostsRoute() {
-  return <PostsPage />;
+  return <TaskPage />;
 }

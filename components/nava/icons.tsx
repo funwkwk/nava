@@ -76,6 +76,7 @@ import {
   faSubstack,
   faTiktok,
   faYoutube,
+  faMastodon,
 } from "@fortawesome/free-brands-svg-icons";
 
 // Sizing comes from Tailwind classes, so FontAwesome's own stylesheet is not injected.
@@ -169,6 +170,7 @@ export const Bluesky = make(faBluesky);
 export const Substack = make(faSubstack);
 export const Tiktok = make(faTiktok);
 export const Youtube = make(faYoutube);
+export const Mastodon = make(faMastodon);
 export const ChevronLeft = make(faChevronLeft);
 export const FileText = make(faFileLines);
 export const Film = make(faFilm);

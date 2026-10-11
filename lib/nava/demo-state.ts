@@ -1,16 +1,20 @@
 import { platformCatalog } from "@/lib/nava/navigation";
 import type {
   AccountType,
+  AccountGroup,
   ActivityItem,
   AuditFinding,
   Client,
   ContentItem,
   ContentVariant,
+  WorkspaceContact,
+  WorkspaceConversation,
   NavaState,
   OnboardingPayload,
   Platform,
   SessionUser,
   SocialAccount,
+  WorkspaceTask,
   Workspace,
 } from "@/lib/nava/types";
 
@@ -68,6 +72,12 @@ function createContentSeed(
   accountType: AccountType,
   clientIds: Array<string | null>,
 ): ContentItem[] {
+  const scheduleAt = (daysFromNow: number, hour: number, minute = 0) => {
+    const date = new Date();
+    date.setDate(date.getDate() + daysFromNow);
+    date.setHours(hour, minute, 0, 0);
+    return date.toISOString();
+  };
   const [primaryClientId] = clientIds;
   const secondaryClientId = clientIds[1] ?? primaryClientId ?? null;
 
@@ -89,7 +99,7 @@ function createContentSeed(
       objective: "Engagement",
       status: "scheduled",
       approvalStatus: accountType === "agency" ? "pending" : "approved",
-      scheduledFor: "2026-10-06T09:00:00.000Z",
+      scheduledFor: scheduleAt(1, 9),
       platforms: ["instagram", "threads"],
       clientId: primaryClientId ?? null,
     },
@@ -100,7 +110,7 @@ function createContentSeed(
       objective: "Authority",
       status: "draft",
       approvalStatus: accountType === "agency" ? "revision-requested" : "not-required",
-      scheduledFor: "2026-10-07T03:30:00.000Z",
+      scheduledFor: scheduleAt(2, 10, 30),
       platforms: ["instagram", "linkedin"],
       clientId: primaryClientId ?? null,
     },
@@ -111,7 +121,7 @@ function createContentSeed(
       objective: "Reach",
       status: "idea",
       approvalStatus: "not-required",
-      scheduledFor: "2026-10-08T11:45:00.000Z",
+      scheduledFor: scheduleAt(3, 11, 45),
       platforms: ["tiktok", "youtube"],
       clientId: secondaryClientId,
     },
@@ -132,6 +142,43 @@ function createContentSeed(
       createVariant(platform, item.title, item.objective),
     ),
   }));
+}
+
+function createTaskSeed(workspace: Workspace, clientIds: Array<string | null>): WorkspaceTask[] {
+  const dueDate = (daysFromNow: number) => {
+    const date = new Date();
+    date.setDate(date.getDate() + daysFromNow);
+    date.setHours(17, 0, 0, 0);
+    return date.toISOString();
+  };
+  return [
+    { id: createId("task"), workspaceId: workspace.id, title: "Review launch week captions", description: "Check tone, links, and final calls to action before scheduling.", clientId: clientIds[0] ?? null, relatedPostId: null, assignee: "You", priority: "high", status: "in-progress", dueDate: dueDate(0), labels: ["Launch", "Copy"], comments: [] },
+    { id: createId("task"), workspaceId: workspace.id, title: "Approve founder carousel", description: "Share the final carousel copy with the client for review.", clientId: clientIds[0] ?? null, relatedPostId: null, assignee: "You", priority: "medium", status: "in-review", dueDate: dueDate(1), labels: ["Review"], comments: [] },
+    { id: createId("task"), workspaceId: workspace.id, title: "Prepare short-form video brief", description: "Collect the hook, shot list, and asset requirements for the next video.", clientId: clientIds[1] ?? clientIds[0] ?? null, relatedPostId: null, assignee: "Unassigned", priority: "medium", status: "todo", dueDate: dueDate(3), labels: ["Video"], comments: [] },
+    { id: createId("task"), workspaceId: workspace.id, title: "Send weekly performance recap", description: "Summarize publishing activity and the most useful learnings.", clientId: clientIds[0] ?? null, relatedPostId: null, assignee: "You", priority: "low", status: "done", dueDate: dueDate(-1), labels: ["Reporting"], comments: [] },
+  ];
+}
+
+function createGroupSeed(workspace: Workspace, clients: Client[], accounts: SocialAccount[]): AccountGroup[] {
+  const firstClient = clients[0];
+  return [{ id: createId("group"), workspaceId: workspace.id, clientId: firstClient?.id ?? null, name: firstClient ? `${firstClient.name} social` : "Social channels", description: "Core social publishing accounts for this workspace.", accountIds: accounts.map((account) => account.id), members: ["You"] }];
+}
+
+function createContactSeed(workspace: Workspace, clients: Client[]): WorkspaceContact[] {
+  const clientId = clients[0]?.id ?? null;
+  return [
+    { id: createId("contact"), workspaceId: workspace.id, clientId, name: "Jordan Lee", username: "@jordancreates", platform: "instagram", tags: ["Creator", "Partner"], assignee: "You", lastInteraction: new Date().toISOString(), notes: "Demo contact. Interested in the upcoming launch collaboration." },
+    { id: createId("contact"), workspaceId: workspace.id, clientId, name: "Casey Morgan", username: "@casey.morgan", platform: "facebook", tags: ["Customer"], assignee: "Unassigned", lastInteraction: new Date(Date.now() - 86400000 * 2).toISOString(), notes: "Demo contact record." },
+  ];
+}
+
+function createConversationSeed(workspace: Workspace, clients: Client[]): WorkspaceConversation[] {
+  const clientId = clients[0]?.id ?? null;
+  return [
+    { id: createId("conversation"), workspaceId: workspace.id, clientId, contactName: "Jordan Lee", platform: "instagram", kind: "public-comment", preview: "Love this direction — when is the launch?", messages: ["Jordan Lee · Demo comment: Love this direction — when is the launch?"], unread: true, status: "open", priority: "medium", assignee: "Unassigned", replySupported: false },
+    { id: createId("conversation"), workspaceId: workspace.id, clientId, contactName: "Casey Morgan", platform: "facebook", kind: "private-message", preview: "Could you share more details about the new collection?", messages: ["Casey Morgan · Demo message: Could you share more details about the new collection?"], unread: false, status: "open", priority: "low", assignee: "You", replySupported: false },
+    { id: createId("conversation"), workspaceId: workspace.id, clientId, contactName: "Taylor Kim", platform: "threads", kind: "public-comment", preview: "The tips in this post were really helpful.", messages: ["Taylor Kim · Demo reply: The tips in this post were really helpful."], unread: false, status: "resolved", priority: "low", assignee: "You", replySupported: false },
+  ];
 }
 
 function createAuditSeed(clientIds: Array<string | null>): AuditFinding[] {
@@ -221,6 +268,7 @@ function createSocialAccounts(
       connectionStatus: index === 0 ? "connected" : "attention",
       capabilities: meta?.capabilities ?? [],
       postsThisWeek: 2 + index,
+      dataSource: "demo",
     };
   });
 }
@@ -238,6 +286,10 @@ export function createEmptyState(supabaseReady: boolean): NavaState {
     clients: [],
     socialAccounts: [],
     contentItems: [],
+    tasks: [],
+    groups: [],
+    contacts: [],
+    conversations: [],
     auditFindings: [],
     insightKpis: [],
     activities: [],
@@ -266,6 +318,10 @@ export function createSeedStateFromOnboarding(
     clients,
     socialAccounts,
     contentItems: createContentSeed(workspace, user.accountType, clientIds),
+    tasks: createTaskSeed(workspace, clientIds),
+    groups: createGroupSeed(workspace, clients, socialAccounts),
+    contacts: createContactSeed(workspace, clients),
+    conversations: createConversationSeed(workspace, clients),
     auditFindings: createAuditSeed(clientIds),
     insightKpis: [
       {

@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f5f3ef;
+  color-scheme: light;
+  --background: #f7f6f3;
   --foreground: #292928;
   --muted-foreground: #6c7485;
-  --surface-canvas: #f5f3ef;
+  --surface-canvas: #f7f6f3;
   --surface-card: #ffffff;
   --surface-card-alt: #faf8f4;
   --surface-sidebar: #f7f4ef;
@@ -32,6 +33,7 @@
 }
 
 html[data-theme="dark"] {
+  color-scheme: dark;
   --background: #0f1116;
   --foreground: #eef3fb;
   --muted-foreground: #9ca7bb;
@@ -68,6 +70,24 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+select,
+input[type="date"],
+input[type="datetime-local"] {
+  min-height: 2.5rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.75rem;
+  background-color: var(--surface-card);
+  color: var(--foreground);
+  padding: 0.5rem 0.75rem;
+}
+
+select:focus-visible,
+input[type="date"]:focus-visible,
+input[type="datetime-local"]:focus-visible {
+  outline: 2px solid var(--border-strong);
+  outline-offset: 2px;
 }
 
 button:enabled,

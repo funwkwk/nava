@@ -13,6 +13,7 @@ import {
 import { createEmptyState, createSeedStateFromOnboarding } from "@/lib/nava/demo-state";
 import type {
   Client,
+  AccountGroup,
   ContentCreateInput,
   ContentItem,
   NavaState,
@@ -20,6 +21,10 @@ import type {
   Platform,
   SessionUser,
   SocialAccount,
+  TaskCreateInput,
+  WorkspaceTask,
+  WorkspaceContact,
+  WorkspaceConversation,
 } from "@/lib/nava/types";
 import { platformCatalog } from "@/lib/nava/navigation";
 import { supabaseConfigured } from "@/lib/supabase/env";
@@ -42,7 +47,7 @@ function readStoredState() {
     const rawState = window.localStorage.getItem(STORAGE_KEY);
 
     return rawState
-      ? (JSON.parse(rawState) as NavaState)
+      ? ({ tasks: [], groups: [], contacts: [], conversations: [], ...JSON.parse(rawState) } as NavaState)
       : createEmptyState(supabaseConfigured);
   } catch {
     window.localStorage.removeItem(STORAGE_KEY);
@@ -85,6 +90,10 @@ interface NavaContextValue {
   scopedContentItems: ContentItem[];
   scopedAuditFindings: NavaState["auditFindings"];
   scopedSocialAccounts: SocialAccount[];
+  scopedTasks: WorkspaceTask[];
+  scopedGroups: AccountGroup[];
+  scopedContacts: WorkspaceContact[];
+  scopedConversations: WorkspaceConversation[];
   authenticate: (input: {
     email: string;
     name: string;
@@ -93,6 +102,21 @@ interface NavaContextValue {
   completeOnboarding: (payload: OnboardingPayload) => void;
   selectClient: (clientId: string | "all") => void;
   addContentItem: (input: ContentCreateInput) => void;
+  updateContentItem: (contentId: string, updates: Partial<Pick<ContentItem, "title" | "summary" | "status" | "approvalStatus" | "scheduledFor" | "platformVariants" | "clientId" | "pillar" | "objective">>) => void;
+  removeContentItem: (contentId: string) => void;
+  duplicateContentItem: (contentId: string) => void;
+  addTask: (input: TaskCreateInput) => void;
+  updateTask: (taskId: string, updates: Partial<Pick<WorkspaceTask, "title" | "description" | "clientId" | "relatedPostId" | "assignee" | "priority" | "status" | "dueDate" | "labels" | "comments">>) => void;
+  addDemoSocialAccount: (platform: Platform, handle: string, clientId: string | null) => void;
+  updateSocialAccountStatus: (accountId: string, status: SocialAccount["connectionStatus"]) => void;
+  removeSocialAccount: (accountId: string) => void;
+  addGroup: (input: Omit<AccountGroup, "id" | "workspaceId">) => void;
+  updateGroup: (groupId: string, updates: Partial<Omit<AccountGroup, "id" | "workspaceId">>) => void;
+  removeGroup: (groupId: string) => void;
+  addContact: (input: Omit<WorkspaceContact, "id" | "workspaceId">) => void;
+  updateContact: (contactId: string, updates: Partial<Omit<WorkspaceContact, "id" | "workspaceId">>) => void;
+  removeContact: (contactId: string) => void;
+  updateConversation: (conversationId: string, updates: Partial<Omit<WorkspaceConversation, "id" | "workspaceId">>) => void;
   setTheme: (theme: NavaTheme) => void;
   logout: () => void;
   resetDemo: () => void;
@@ -210,7 +234,7 @@ export function NavaProvider({ children }: { children: ReactNode }) {
         summary: input.summary,
         pillar: input.pillar,
         objective: input.objective,
-        status: "draft",
+        status: input.status ?? "draft",
         approvalStatus:
           previousState.session.currentUser.accountType === "agency"
             ? "pending"
@@ -224,6 +248,89 @@ export function NavaProvider({ children }: { children: ReactNode }) {
         contentItems: [newItem, ...previousState.contentItems],
       };
     });
+  }, []);
+
+  const updateContentItem = useCallback((contentId: string, updates: Partial<Pick<ContentItem, "title" | "summary" | "status" | "approvalStatus" | "scheduledFor" | "platformVariants" | "clientId" | "pillar" | "objective">>) => {
+    setState((previousState) => ({ ...previousState, contentItems: previousState.contentItems.map((item) => item.id === contentId ? { ...item, ...updates } : item) }));
+  }, []);
+  const removeContentItem = useCallback((contentId: string) => {
+    setState((previousState) => ({ ...previousState, contentItems: previousState.contentItems.filter((item) => item.id !== contentId) }));
+  }, []);
+  const duplicateContentItem = useCallback((contentId: string) => setState((previousState) => {
+    const item = previousState.contentItems.find((candidate) => candidate.id === contentId);
+    if (!item) return previousState;
+    const copy: ContentItem = { ...item, id: createId("content"), title: `${item.title} copy`, status: "draft", approvalStatus: "not-required", platformVariants: item.platformVariants.map((variant) => ({ ...variant, id: createId("variant") })) };
+    return { ...previousState, contentItems: [copy, ...previousState.contentItems] };
+  }), []);
+
+  const addTask = useCallback((input: TaskCreateInput) => {
+    setState((previousState) => {
+      if (!previousState.workspace) return previousState;
+      const task: WorkspaceTask = {
+        ...input,
+        id: createId("task"),
+        workspaceId: previousState.workspace.id,
+        comments: [],
+      };
+      return { ...previousState, tasks: [task, ...(previousState.tasks ?? [])] };
+    });
+  }, []);
+
+  const updateTask = useCallback((taskId: string, updates: Partial<Pick<WorkspaceTask, "title" | "description" | "clientId" | "relatedPostId" | "assignee" | "priority" | "status" | "dueDate" | "labels" | "comments">>) => {
+    setState((previousState) => ({
+      ...previousState,
+      tasks: (previousState.tasks ?? []).map((task) => task.id === taskId ? { ...task, ...updates } : task),
+    }));
+  }, []);
+
+  const addDemoSocialAccount = useCallback((platform: Platform, handle: string, clientId: string | null) => {
+    setState((previousState) => {
+      if (!previousState.workspace) return previousState;
+      const catalogEntry = platformCatalog.find((entry) => entry.value === platform);
+      const account: SocialAccount = {
+        id: createId("social"), workspaceId: previousState.workspace.id, clientId,
+        platform, handle: handle.trim().replace(/^@/, ""), connectionStatus: "connected",
+        capabilities: catalogEntry?.capabilities ?? [], postsThisWeek: 0, dataSource: "demo",
+      };
+      return { ...previousState, socialAccounts: [...previousState.socialAccounts, account] };
+    });
+  }, []);
+
+  const updateSocialAccountStatus = useCallback((accountId: string, status: SocialAccount["connectionStatus"]) => {
+    setState((previousState) => ({ ...previousState, socialAccounts: previousState.socialAccounts.map((account) => account.id === accountId ? { ...account, connectionStatus: status } : account) }));
+  }, []);
+
+  const removeSocialAccount = useCallback((accountId: string) => {
+    setState((previousState) => ({
+      ...previousState,
+      socialAccounts: previousState.socialAccounts.filter((account) => account.id !== accountId),
+      groups: (previousState.groups ?? []).map((group) => ({
+        ...group,
+        accountIds: group.accountIds.filter((groupAccountId) => groupAccountId !== accountId),
+      })),
+    }));
+  }, []);
+
+  const addGroup = useCallback((input: Omit<AccountGroup, "id" | "workspaceId">) => {
+    setState((previousState) => previousState.workspace ? ({ ...previousState, groups: [...(previousState.groups ?? []), { ...input, id: createId("group"), workspaceId: previousState.workspace.id }] }) : previousState);
+  }, []);
+  const updateGroup = useCallback((groupId: string, updates: Partial<Omit<AccountGroup, "id" | "workspaceId">>) => {
+    setState((previousState) => ({ ...previousState, groups: (previousState.groups ?? []).map((group) => group.id === groupId ? { ...group, ...updates } : group) }));
+  }, []);
+  const removeGroup = useCallback((groupId: string) => {
+    setState((previousState) => ({ ...previousState, groups: (previousState.groups ?? []).filter((group) => group.id !== groupId) }));
+  }, []);
+  const addContact = useCallback((input: Omit<WorkspaceContact, "id" | "workspaceId">) => {
+    setState((previousState) => previousState.workspace ? ({ ...previousState, contacts: [...(previousState.contacts ?? []), { ...input, id: createId("contact"), workspaceId: previousState.workspace.id }] }) : previousState);
+  }, []);
+  const updateContact = useCallback((contactId: string, updates: Partial<Omit<WorkspaceContact, "id" | "workspaceId">>) => {
+    setState((previousState) => ({ ...previousState, contacts: (previousState.contacts ?? []).map((contact) => contact.id === contactId ? { ...contact, ...updates } : contact) }));
+  }, []);
+  const removeContact = useCallback((contactId: string) => {
+    setState((previousState) => ({ ...previousState, contacts: (previousState.contacts ?? []).filter((contact) => contact.id !== contactId) }));
+  }, []);
+  const updateConversation = useCallback((conversationId: string, updates: Partial<Omit<WorkspaceConversation, "id" | "workspaceId">>) => {
+    setState((previousState) => ({ ...previousState, conversations: (previousState.conversations ?? []).map((conversation) => conversation.id === conversationId ? { ...conversation, ...updates } : conversation) }));
   }, []);
 
   const logout = useCallback(() => {
@@ -271,6 +378,27 @@ export function NavaProvider({ children }: { children: ReactNode }) {
     );
   }, [state.socialAccounts, state.workspace]);
 
+  const scopedTasks = useMemo(() => {
+    const tasks = state.tasks ?? [];
+    if (!state.workspace || state.workspace.selectedClientId === "all") return tasks;
+    return tasks.filter((task) => task.clientId === state.workspace?.selectedClientId);
+  }, [state.tasks, state.workspace]);
+  const scopedGroups = useMemo(() => {
+    const groups = state.groups ?? [];
+    if (!state.workspace || state.workspace.selectedClientId === "all") return groups;
+    return groups.filter((group) => group.clientId === state.workspace?.selectedClientId);
+  }, [state.groups, state.workspace]);
+  const scopedContacts = useMemo(() => {
+    const contacts = state.contacts ?? [];
+    if (!state.workspace || state.workspace.selectedClientId === "all") return contacts;
+    return contacts.filter((contact) => contact.clientId === state.workspace?.selectedClientId);
+  }, [state.contacts, state.workspace]);
+  const scopedConversations = useMemo(() => {
+    const conversations = state.conversations ?? [];
+    if (!state.workspace || state.workspace.selectedClientId === "all") return conversations;
+    return conversations.filter((conversation) => conversation.clientId === state.workspace?.selectedClientId);
+  }, [state.conversations, state.workspace]);
+
   const value = useMemo<NavaContextValue>(
     () => ({
       ready,
@@ -282,10 +410,29 @@ export function NavaProvider({ children }: { children: ReactNode }) {
       scopedContentItems,
       scopedAuditFindings,
       scopedSocialAccounts,
+      scopedTasks,
+      scopedGroups,
+      scopedContacts,
+      scopedConversations,
       authenticate,
       completeOnboarding,
       selectClient,
       addContentItem,
+      updateContentItem,
+      removeContentItem,
+      duplicateContentItem,
+      addTask,
+      updateTask,
+      addDemoSocialAccount,
+      updateSocialAccountStatus,
+      removeSocialAccount,
+      addGroup,
+      updateGroup,
+      removeGroup,
+      addContact,
+      updateContact,
+      removeContact,
+      updateConversation,
       setTheme,
       logout,
       resetDemo,
@@ -298,10 +445,29 @@ export function NavaProvider({ children }: { children: ReactNode }) {
       scopedContentItems,
       scopedAuditFindings,
       scopedSocialAccounts,
+      scopedTasks,
+      scopedGroups,
+      scopedContacts,
+      scopedConversations,
       authenticate,
       completeOnboarding,
       selectClient,
       addContentItem,
+      updateContentItem,
+      removeContentItem,
+      duplicateContentItem,
+      addTask,
+      updateTask,
+      addDemoSocialAccount,
+      updateSocialAccountStatus,
+      removeSocialAccount,
+      addGroup,
+      updateGroup,
+      removeGroup,
+      addContact,
+      updateContact,
+      removeContact,
+      updateConversation,
       setTheme,
       logout,
       resetDemo,

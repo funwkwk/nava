@@ -37,7 +37,7 @@ import {
 import { useNava } from "@/components/nava/nava-provider";
 import { DateTimePicker, toLocalValue } from "@/components/nava/date-time-picker";
 import { Textarea, cn } from "@/components/nava/ui";
-import type { Platform } from "@/lib/nava/types";
+import type { ContentStatus, Platform } from "@/lib/nava/types";
 
 const platforms: Array<{
   value: Platform;
@@ -101,7 +101,7 @@ function useDismiss<T extends HTMLElement>(open: boolean, close: () => void) {
 
 export function CreatePostPage() {
   const router = useRouter();
-  const { addContentItem, sessionUser, workspace } = useNava();
+  const { addContentItem, sessionUser, state, workspace } = useNava();
   const [error, setError] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -115,7 +115,7 @@ export function CreatePostPage() {
   const [form, setForm] = useState({
     summary: "",
     scheduledFor: "2026-10-09T09:00",
-    clientId: "",
+    clientId: null as string | null,
     platforms: ["instagram"] as string[],
   });
 
@@ -195,8 +195,8 @@ export function CreatePostPage() {
     }));
   }
 
-  function publish(scheduledFor: string) {
-    const result = schema.safeParse({ ...form, scheduledFor });
+  function publish(scheduledFor: string, status: ContentStatus = "scheduled") {
+    const result = schema.safeParse({ ...form, clientId: form.clientId ?? (workspace?.selectedClientId && workspace.selectedClientId !== "all" ? workspace.selectedClientId : ""), scheduledFor });
 
     if (!result.success) {
       setError(result.error.issues[0]?.message ?? "Review the post and try again.");
@@ -213,8 +213,9 @@ export function CreatePostPage() {
       clientId: result.data.clientId || null,
       platforms: result.data.platforms as Platform[],
       scheduledFor: new Date(result.data.scheduledFor).toISOString(),
+      status,
     });
-    router.push("/app/posts");
+    router.push("/app/approval");
   }
 
   function nextSlot() {
@@ -230,7 +231,7 @@ export function CreatePostPage() {
     <form
       onSubmit={(event: FormEvent) => {
         event.preventDefault();
-        publish(form.scheduledFor);
+        publish(form.scheduledFor, "scheduled");
       }}
       className="grid gap-4 lg:h-[calc(100vh-2rem)] lg:grid-cols-[minmax(0,1fr)_320px]"
     >
@@ -239,6 +240,7 @@ export function CreatePostPage() {
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto">
       <aside className="flex flex-col rounded-[24px] bg-white p-5">
         <h2 className="mb-3 text-base font-semibold">Accounts</h2>
+        {sessionUser.accountType === "agency" ? <label className="mb-3 block space-y-1 text-xs font-medium text-[var(--muted-foreground)]">Client<select aria-label="Post client" value={form.clientId ?? (workspace?.selectedClientId && workspace.selectedClientId !== "all" ? workspace.selectedClientId : "")} onChange={(event) => update("clientId", event.target.value)} className="mt-1 w-full rounded-xl border border-[var(--border-subtle)] bg-white px-3 py-2 text-sm text-foreground"><option value="">All clients</option>{state.clients.map((client) => <option key={client.id} value={client.id}>{client.name}</option>)}</select></label> : null}
         <div className="mb-4">
           <DateTimePicker value={form.scheduledFor} onChange={(value) => update("scheduledFor", value)} />
         </div>
@@ -400,15 +402,15 @@ export function CreatePostPage() {
         <footer className="flex shrink-0 items-center justify-end gap-2 rounded-[24px] bg-white px-4 py-3">
           <button
             type="button"
-            onClick={() => publish(form.scheduledFor)}
+            onClick={() => publish(form.scheduledFor, "draft")}
             className="inline-flex h-9 items-center rounded-xl px-3 text-sm text-[var(--muted-foreground)] hover:bg-[var(--surface-card-alt)]"
           >
-            Schedule Draft
+            Save Draft
           </button>
           <div ref={menuRef} className="relative flex">
             <button
               type="submit"
-              className="inline-flex h-9 items-center gap-2 rounded-l-xl bg-[var(--surface-brand)] px-4 text-sm font-medium text-white hover:bg-[var(--surface-brand-strong)]"
+              className="inline-flex h-9 items-center gap-2 rounded-l-xl border border-[var(--border-subtle)] bg-white px-4 text-sm font-medium text-foreground hover:bg-[var(--surface-card-alt)]"
             >
               <CalendarRange className="h-4 w-4" /> Schedule Post
             </button>
@@ -417,7 +419,7 @@ export function CreatePostPage() {
               aria-label="More publish options"
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((previous) => !previous)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-r-xl border-l border-white/30 bg-[var(--surface-brand)] text-white hover:bg-[var(--surface-brand-strong)]"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-r-xl border border-l-0 border-[var(--border-subtle)] bg-white text-foreground hover:bg-[var(--surface-card-alt)]"
             >
               <ChevronDown className={cn("h-4 w-4 transition", menuOpen && "rotate-180")} />
             </button>
@@ -426,19 +428,19 @@ export function CreatePostPage() {
                 <li>
                   <button
                     type="button"
-                    onClick={() => publish(toLocalValue(new Date()))}
+                    onClick={() => publish(toLocalValue(new Date()), "scheduled")}
                     className="flex w-full items-center rounded-xl px-3 py-2 text-left text-sm hover:bg-[var(--surface-card-alt)]"
                   >
-                    <Send className="mr-2 h-4 w-4" /> Share Now
+                    <Send className="mr-2 h-4 w-4" /> Publish Now (demo)
                   </button>
                 </li>
                 <li>
                   <button
                     type="button"
-                    onClick={() => publish(nextSlot())}
+                    onClick={() => publish(nextSlot(), "scheduled")}
                     className="flex w-full items-center rounded-xl px-3 py-2 text-left text-sm hover:bg-[var(--surface-card-alt)]"
                   >
-                    <Send className="mr-2 h-4 w-4" /> Share Next
+                    <Send className="mr-2 h-4 w-4" /> Schedule Next
                   </button>
                 </li>
               </ul>
