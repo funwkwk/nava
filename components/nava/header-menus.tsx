@@ -64,7 +64,7 @@ export function ClientMenu({
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((previous) => !previous)}
-        className="flex min-w-48 items-center justify-between gap-3 rounded-xl bg-[var(--surface-card-alt)] px-3.5 py-2 text-sm font-medium transition hover:brightness-95"
+        className="flex w-full items-center justify-between gap-3 rounded-xl bg-[var(--surface-card-alt)] px-3.5 py-2 text-sm font-medium transition hover:brightness-95"
       >
         {current.name}
         <ChevronDown className={cn("h-4 w-4 text-[var(--muted-foreground)] transition", open && "rotate-180")} />
@@ -134,11 +134,15 @@ export function ProfileMenu({
   organization,
   channels,
   onLogout,
+  placement = "bottom",
+  collapsed = false,
 }: {
   name: string;
   organization: string;
   channels: number;
   onLogout: () => void;
+  placement?: "bottom" | "top";
+  collapsed?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
@@ -151,19 +155,30 @@ export function ProfileMenu({
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
+        title={collapsed ? name : undefined}
         onClick={() => setOpen((previous) => !previous)}
-        className="flex items-center gap-2.5 rounded-full bg-[var(--surface-card-alt)] py-1.5 pl-2 pr-3 transition hover:brightness-95"
+        className={cn(
+          "flex w-full items-center gap-2.5 rounded-xl bg-[var(--surface-card-alt)] px-2 py-1.5 transition hover:brightness-95",
+          collapsed && "md:justify-center md:px-0",
+        )}
       >
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface-accent)] text-xs font-semibold text-[var(--surface-accent-foreground)]">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--surface-accent)] text-xs font-semibold text-[var(--surface-accent-foreground)]">
           {name.slice(0, 1).toUpperCase()}
         </span>
-        <span className="hidden text-sm font-medium sm:block">{name}</span>
-        <ChevronDown className={cn("hidden h-4 w-4 text-[var(--muted-foreground)] transition sm:block", open && "rotate-180")} />
+        <span className={cn("min-w-0 flex-1 truncate text-sm font-medium", collapsed && "md:hidden")}>
+          {name}
+        </span>
+        <ChevronDown className={cn("h-4 w-4 shrink-0 text-[var(--muted-foreground)] transition", open && "rotate-180", collapsed && "md:hidden")} />
       </button>
       {open ? (
         <div
           role="menu"
-          className="absolute right-0 top-full z-40 mt-2 w-72 rounded-2xl bg-white p-3 shadow-[0_12px_32px_rgba(25,28,35,0.16)]"
+          className={cn(
+            "absolute z-40 w-72 rounded-2xl bg-white p-3 shadow-[0_12px_32px_rgba(25,28,35,0.16)]",
+            placement === "top"
+              ? "left-0 bottom-full mb-2 max-md:bottom-auto max-md:top-full max-md:mt-2"
+              : "right-0 top-full mt-2",
+          )}
         >
           <div className="px-2 pb-3">
             <p className="text-base font-semibold">{organization}</p>

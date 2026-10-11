@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 import {
-  Bell,
   CalendarRange,
   ChartColumnBig,
   CheckCircle2,
@@ -45,15 +44,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { ready, sessionUser, state, workspace, selectClient, logout, scopedSocialAccounts } = useNava();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isStuck, setIsStuck] = useState(false);
   const [connectChannelOpen, setConnectChannelOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setIsStuck(window.scrollY > 16);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   if (!ready) {
     return (
@@ -146,6 +137,16 @@ export function AppShell({ children }: { children: ReactNode }) {
           </button>
         </div>
 
+        {sessionUser.accountType === "agency" ? (
+          <div className={cn("mb-4", isSidebarCollapsed && "md:hidden")}>
+            <ClientMenu
+              value={workspace.selectedClientId}
+              clients={state.clients}
+              onSelect={selectClient}
+            />
+          </div>
+        ) : null}
+
         <Link
           href="/app/posts/new"
           title="Create Post"
@@ -195,31 +196,44 @@ export function AppShell({ children }: { children: ReactNode }) {
           })}
         </nav>
 
-        <div className={cn("mt-auto space-y-3 px-1 pt-6", isSidebarCollapsed && "md:hidden")}>
-          <p className="text-xs font-medium text-[var(--muted-foreground)]">
-            Connect channels
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {channelShortcuts.map(({ label, Icon, color }) => (
-              <Link
-                key={label}
-                href="/app/accounts"
-                aria-label={label}
-                title={label}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-white transition hover:brightness-90"
-                style={{ background: color }}
+        <div className="mt-auto flex flex-col gap-4 pt-6">
+          <div className={cn("space-y-3 px-1", isSidebarCollapsed && "md:hidden")}>
+            <p className="text-xs font-medium text-[var(--muted-foreground)]">
+              Connect channels
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {channelShortcuts.map(({ label, Icon, color }) => (
+                <Link
+                  key={label}
+                  href="/app/accounts"
+                  aria-label={label}
+                  title={label}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-white transition hover:brightness-90"
+                  style={{ background: color }}
+                >
+                  <Icon className="h-[18px] w-[18px]" color="#ffffff" />
+                </Link>
+              ))}
+              <button
+                type="button"
+                onClick={() => setConnectChannelOpen(true)}
+                aria-label="Connect another channel"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-card)] text-[var(--muted-foreground)] transition hover:bg-[var(--surface-card-alt)]"
               >
-                <Icon className="h-[18px] w-[18px]" color="#ffffff" />
-              </Link>
-            ))}
-            <button
-              type="button"
-              onClick={() => setConnectChannelOpen(true)}
-              aria-label="Connect another channel"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-card)] text-[var(--muted-foreground)] transition hover:bg-[var(--surface-card-alt)]"
-            >
-              <Plus className="h-4 w-4" />
-            </button>
+                <Plus className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="px-1">
+            <ProfileMenu
+              name={sessionUser.name}
+              organization={sessionUser.name}
+              channels={scopedSocialAccounts.length}
+              onLogout={logout}
+              placement="top"
+              collapsed={isSidebarCollapsed}
+            />
           </div>
         </div>
 
@@ -229,49 +243,10 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <section className="min-w-0 flex-1">
         <div className="mx-auto flex max-w-[1440px] flex-col gap-4">
-          {isComposer ? null : (
-          <header
-            className={cn(
-              "sticky top-0 z-30 flex min-h-[72px] flex-wrap items-center justify-between gap-3 bg-[var(--surface-card)] px-4 py-3 transition-[border-radius,box-shadow] sm:px-6 lg:px-7",
-              isStuck
-                ? "rounded-b-[22px] rounded-t-none shadow-[0_6px_20px_rgba(25,28,35,0.08)]"
-                : "rounded-[22px]",
-            )}
-          >
-            <div className="flex items-center gap-3">
-              {sessionUser.accountType === "agency" ? (
-                <ClientMenu
-                  value={workspace.selectedClientId}
-                  clients={state.clients}
-                  onSelect={selectClient}
-                />
-              ) : (
-                <p className="text-sm font-medium text-[var(--muted-foreground)]">{sessionUser.name}</p>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                aria-label="Notifications"
-                className="flex h-9 w-9 items-center justify-center rounded-xl text-[var(--muted-foreground)] transition hover:bg-[var(--surface-card-alt)] hover:text-foreground"
-              >
-                <Bell className="h-4 w-4" />
-              </button>
-              <ProfileMenu
-                name={sessionUser.name}
-                organization={sessionUser.name}
-                channels={scopedSocialAccounts.length}
-                onLogout={logout}
-              />
-            </div>
-          </header>
-          )}
-
           {isComposer ? (
             children
           ) : (
-            <div className="min-h-[calc(100vh-7rem)] rounded-[22px] bg-[var(--surface-card)] px-4 py-4 sm:px-6 lg:px-7 lg:py-5">
+            <div className="min-h-[50vh] rounded-[22px] bg-[var(--surface-card)] px-4 py-4 sm:px-6 lg:px-7 lg:py-5 md:min-h-[calc(100vh-2rem)]">
               {children}
             </div>
           )}
