@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
 :root {
   color-scheme: light;
   --background: #f7f6f3;
@@ -18,6 +27,9 @@
   --surface-success: #0f9f6e;
   --surface-warning: #d97706;
   --surface-critical: #dc2626;
+  --color-illustration-element: #e8e1d4;
+  --color-illustration-border: #d3c9b6;
+  --color-illustration-card: #e8e1d4;
   --border-subtle: rgba(28, 31, 38, 0.08);
   --border-strong: rgba(28, 31, 38, 0.14);
   --shadow-card: 0 10px 30px rgba(25, 28, 35, 0.05);
@@ -45,6 +57,9 @@ html[data-theme="dark"] {
   --surface-brand-soft: rgba(15, 103, 234, 0.24);
   --surface-accent: #1c3920;
   --surface-accent-foreground: #cff5b4;
+  --color-illustration-element: #3a3730;
+  --color-illustration-border: #4a463d;
+  --color-illustration-card: #3a3730;
   --border-subtle: rgba(148, 163, 184, 0.2);
   --border-strong: rgba(148, 163, 184, 0.32);
   --shadow-card: 0 20px 40px rgba(2, 8, 23, 0.45);
@@ -63,6 +78,27 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+
+button,
+a[href],
+[role="button"] {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+}
+
+input,
+select,
+textarea {
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 button,

@@ -67,15 +67,15 @@ export function DateTimePicker({
   }
 
   const timeSelect =
-    "h-9 w-full cursor-pointer appearance-none rounded-xl bg-[var(--surface-card-alt)] px-3 text-center text-sm outline-none";
+    "h-10 w-full cursor-pointer appearance-none rounded-xl bg-[var(--surface-card-alt)] px-3 text-center text-sm outline-none";
 
   return (
-    <div ref={ref} className="relative w-fit max-w-full">
+    <div ref={ref} className="relative w-full">
       <button
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((previous) => !previous)}
-        className="flex h-10 w-full items-center justify-between gap-2 rounded-xl bg-[var(--surface-card-alt)] px-3 text-xs hover:brightness-95"
+        className="flex h-10 w-full items-center justify-between gap-2 rounded-xl bg-[var(--surface-card-alt)] px-3.5 text-sm hover:brightness-95"
       >
         <span className="flex min-w-0 items-center gap-2 whitespace-nowrap">
           <CalendarDays className="h-4 w-4 shrink-0 text-[var(--muted-foreground)]" />
@@ -94,7 +94,7 @@ export function DateTimePicker({
       </button>
 
       {open ? (
-        <div className="absolute left-0 top-full z-40 mt-2 w-72 rounded-3xl bg-white p-4 shadow-[0_16px_40px_rgba(41,41,40,0.18)]">
+        <div className="absolute bottom-full left-0 z-40 mb-2 w-full min-w-72 rounded-3xl bg-white p-4 shadow-[0_16px_40px_rgba(41,41,40,0.18)]">
           <div className="mb-3 flex items-center justify-between">
             <button
               type="button"
@@ -143,9 +143,9 @@ export function DateTimePicker({
                   className={cn(
                     "flex h-9 items-center justify-center rounded-full text-sm transition",
                     isSelected
-                      ? "bg-[var(--surface-brand)] font-semibold text-white"
+                      ? "bg-[var(--surface-accent)] font-semibold text-[var(--surface-accent-foreground)]"
                       : "hover:bg-[var(--surface-card-alt)]",
-                    isToday && !isSelected && "font-semibold text-[var(--surface-brand)]",
+                    isToday && !isSelected && "font-semibold text-[var(--surface-accent-foreground)]",
                   )}
                 >
                   {day}
@@ -179,7 +179,7 @@ export function DateTimePicker({
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="h-9 shrink-0 rounded-xl border border-[var(--border-subtle)] bg-white px-4 text-sm font-medium text-foreground hover:bg-[var(--surface-card-alt)]"
+              className="h-10 shrink-0 rounded-xl bg-[var(--surface-accent)] px-5 text-sm font-semibold text-[var(--surface-accent-foreground)] transition hover:brightness-95"
             >
               Done
             </button>

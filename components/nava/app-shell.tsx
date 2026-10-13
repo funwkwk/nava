@@ -12,18 +12,12 @@ import {
   FolderKanban,
   Inbox,
   LayoutDashboard,
-  PanelLeftClose,
-  PanelLeftOpen,
   PenLine,
-  Plus,
+  Sidebar,
   UserRoundSearch,
   UsersRound,
-  Facebook,
-  Instagram,
-  Tiktok,
 } from "@/components/nava/icons";
-import { ClientMenu, ProfileMenu } from "@/components/nava/header-menus";
-import { ConnectChannelDialog } from "@/components/nava/connect-channel-dialog";
+import { ProfileMenu } from "@/components/nava/header-menus";
 import { useNava } from "@/components/nava/nava-provider";
 import { Button, EmptyState, cn } from "@/components/nava/ui";
 import { workspaceNavigation } from "@/lib/nava/navigation";
@@ -42,9 +36,8 @@ const navIcons = {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const { ready, sessionUser, state, workspace, selectClient, logout, scopedSocialAccounts } = useNava();
+  const { ready, sessionUser, state, workspace, logout, scopedSocialAccounts } = useNava();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [connectChannelOpen, setConnectChannelOpen] = useState(false);
 
   if (!ready) {
     return (
@@ -98,25 +91,16 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
   const isComposer = pathname === "/app/posts/new";
   const navigation = workspaceNavigation;
-  const channelShortcuts = [
-    {
-      label: "Instagram",
-      Icon: Instagram,
-      color: "linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5)",
-    },
-    { label: "Facebook", Icon: Facebook, color: "#1877F2" },
-    { label: "TikTok", Icon: Tiktok, color: "#292928" },
-  ];
 
   return (
     <main className="min-h-screen bg-[var(--surface-canvas)] p-3 sm:p-4 md:flex md:gap-4">
       <aside
         className={cn(
           "mb-3 flex w-full shrink-0 flex-col rounded-2xl bg-white px-4 py-4 transition-[width] duration-200 sm:px-5 md:sticky md:top-4 md:mb-0 md:h-[calc(100vh-2rem)] md:py-5",
-          isSidebarCollapsed ? "md:w-[76px] md:px-3" : "md:w-[220px]",
+          isSidebarCollapsed ? "md:w-[76px] md:px-4" : "md:w-[220px]",
         )}
       >
-        <div className={cn("mb-6 flex items-center justify-between px-1", isSidebarCollapsed && "md:flex-col md:justify-start md:gap-3")}>
+        <div className={cn("mb-6 flex items-center justify-between", isSidebarCollapsed && "md:flex-col md:justify-start md:gap-3")}>
           <Link href="/app" className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#292928] text-sm font-semibold text-white">
               N
@@ -133,19 +117,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             onClick={() => setIsSidebarCollapsed((collapsed) => !collapsed)}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[var(--muted-foreground)] transition hover:bg-[var(--surface-card-alt)] hover:text-foreground"
           >
-            {isSidebarCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+            <Sidebar className="h-3.5 w-3.5" />
           </button>
         </div>
-
-        {sessionUser.accountType === "agency" ? (
-          <div className={cn("mb-4", isSidebarCollapsed && "md:hidden")}>
-            <ClientMenu
-              value={workspace.selectedClientId}
-              clients={state.clients}
-              onSelect={selectClient}
-            />
-          </div>
-        ) : null}
 
         <Link
           href="/app/posts/new"
@@ -196,50 +170,18 @@ export function AppShell({ children }: { children: ReactNode }) {
           })}
         </nav>
 
-        <div className="mt-auto flex flex-col gap-4 pt-6">
-          <div className={cn("space-y-3 px-1", isSidebarCollapsed && "md:hidden")}>
-            <p className="text-xs font-medium text-[var(--muted-foreground)]">
-              Connect channels
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {channelShortcuts.map(({ label, Icon, color }) => (
-                <Link
-                  key={label}
-                  href="/app/accounts"
-                  aria-label={label}
-                  title={label}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-white transition hover:brightness-90"
-                  style={{ background: color }}
-                >
-                  <Icon className="h-[18px] w-[18px]" color="#ffffff" />
-                </Link>
-              ))}
-              <button
-                type="button"
-                onClick={() => setConnectChannelOpen(true)}
-                aria-label="Connect another channel"
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-card)] text-[var(--muted-foreground)] transition hover:bg-[var(--surface-card-alt)]"
-              >
-                <Plus className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-
-          <div className="px-1">
-            <ProfileMenu
-              name={sessionUser.name}
-              organization={sessionUser.name}
-              channels={scopedSocialAccounts.length}
-              onLogout={logout}
-              placement="top"
-              collapsed={isSidebarCollapsed}
-            />
-          </div>
+        <div className="mt-auto px-0 pt-6">
+          <ProfileMenu
+            name={sessionUser.name}
+            organization={sessionUser.name}
+            channels={scopedSocialAccounts.length}
+            onLogout={logout}
+            placement="top"
+            collapsed={isSidebarCollapsed}
+          />
         </div>
 
       </aside>
-
-      <ConnectChannelDialog open={connectChannelOpen} onClose={() => setConnectChannelOpen(false)} />
 
       <section className="min-w-0 flex-1">
         <div className="mx-auto flex max-w-[1440px] flex-col gap-4">

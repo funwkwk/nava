@@ -67,7 +67,7 @@ export function ClientMenu({
         className="flex w-full items-center justify-between gap-3 rounded-xl bg-[var(--surface-card-alt)] px-3.5 py-2 text-sm font-medium transition hover:brightness-95"
       >
         {current.name}
-        <ChevronDown className={cn("h-4 w-4 text-[var(--muted-foreground)] transition", open && "rotate-180")} />
+        <ChevronDown className={cn("h-3 w-3 text-[var(--muted-foreground)] transition", open && "rotate-180")} />
       </button>
       {open ? (
         <ul
@@ -165,10 +165,9 @@ export function ProfileMenu({
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--surface-accent)] text-xs font-semibold text-[var(--surface-accent-foreground)]">
           {name.slice(0, 1).toUpperCase()}
         </span>
-        <span className={cn("min-w-0 flex-1 truncate text-sm font-medium", collapsed && "md:hidden")}>
+        <span className={cn("min-w-0 truncate text-sm font-medium", collapsed && "md:hidden")}>
           {name}
         </span>
-        <ChevronDown className={cn("h-4 w-4 shrink-0 text-[var(--muted-foreground)] transition", open && "rotate-180", collapsed && "md:hidden")} />
       </button>
       {open ? (
         <div

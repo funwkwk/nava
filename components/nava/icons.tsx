@@ -3,8 +3,6 @@ import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAddressBook,
-  faAnglesLeft,
-  faAnglesRight,
   faArrowRight,
   faArrowUpRightFromSquare,
   faAt,
@@ -13,8 +11,10 @@ import {
   faCalendarDays,
   faChartColumn,
   faCheck,
-  faChevronDown,
-  faChevronRight,
+  faAngleDown,
+  faAngleLeft,
+  faAngleRight,
+  faAngleUp,
   faCircleCheck,
   faCircleInfo,
   faCircleQuestion,
@@ -58,10 +58,10 @@ import {
   faDiagramProject,
   faFaceSmile,
   faBox,
-  faChevronLeft,
   faFileLines,
   faFilm,
   faPalette,
+  faBars,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faDropbox,
@@ -79,7 +79,6 @@ import {
   faMastodon,
 } from "@fortawesome/free-brands-svg-icons";
 
-// Sizing comes from Tailwind classes, so FontAwesome's own stylesheet is not injected.
 config.autoAddCss = false;
 
 type IconProps = {
@@ -115,8 +114,8 @@ export const ChartColumnBig = make(faChartColumn);
 export const BarChart3 = ChartColumnBig;
 export const Check = make(faCheck);
 export const CheckCircle2 = make(faCircleCheck);
-export const ChevronDown = make(faChevronDown);
-export const ChevronRight = make(faChevronRight);
+export const ChevronDown = make(faAngleDown);
+export const ChevronRight = make(faAngleRight);
 export const CircleHelp = make(faCircleQuestion);
 export const CircleUserRound = make(faCircleUser);
 export const Clock3 = make(faClock);
@@ -141,8 +140,7 @@ export const LogOut = make(faRightFromBracket);
 export const Mail = make(faEnvelope);
 export const MessageCircle = make(faComment);
 export const MessageSquareText = make(faMessage);
-export const PanelLeftClose = make(faAnglesLeft);
-export const PanelLeftOpen = make(faAnglesRight);
+export const Sidebar = make(faBars);
 export const Pencil = make(faPen);
 export const PenLine = make(faPenToSquare);
 export const Plus = make(faPlus);
@@ -171,7 +169,7 @@ export const Substack = make(faSubstack);
 export const Tiktok = make(faTiktok);
 export const Youtube = make(faYoutube);
 export const Mastodon = make(faMastodon);
-export const ChevronLeft = make(faChevronLeft);
+export const ChevronLeft = make(faAngleLeft);
 export const FileText = make(faFileLines);
 export const Film = make(faFilm);
 export const Palette = make(faPalette);
