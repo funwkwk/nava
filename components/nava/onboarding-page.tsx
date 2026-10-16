@@ -1,11 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { CheckCircle2 } from "@/components/nava/icons";
 import { z } from "zod";
 import { useNava } from "@/components/nava/nava-provider";
 import { Badge, Button, Card, Input, SectionHeading, Textarea, cn } from "@/components/nava/ui";
+import { NavaLogo } from "@/components/nava/logo";
 import { platformCatalog } from "@/lib/nava/navigation";
 import type { Platform } from "@/lib/nava/types";
 
@@ -147,6 +149,9 @@ export function OnboardingPage() {
     <main className="mx-auto min-h-screen max-w-7xl px-6 py-8 lg:px-10">
       <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
         <Card className="space-y-6 bg-[var(--surface-sidebar)] text-white">
+          <Link href="/" className="inline-block" title="NAVA">
+            <NavaLogo size="lg" className="text-white" />
+          </Link>
           <div className="space-y-3">
             <Badge className="bg-white/10 text-white" tone="neutral">
               Progressive onboarding

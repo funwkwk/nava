@@ -20,6 +20,7 @@ import {
 import { ProfileMenu } from "@/components/nava/header-menus";
 import { useNava } from "@/components/nava/nava-provider";
 import { Button, EmptyState, cn } from "@/components/nava/ui";
+import { NavaLogo } from "@/components/nava/logo";
 import { workspaceNavigation } from "@/lib/nava/navigation";
 
 const navIcons = {
@@ -96,18 +97,13 @@ export function AppShell({ children }: { children: ReactNode }) {
     <main className="min-h-screen bg-[var(--surface-canvas)] p-3 sm:p-4 md:flex md:gap-4">
       <aside
         className={cn(
-          "mb-3 flex w-full shrink-0 flex-col rounded-2xl bg-white px-4 py-4 transition-[width] duration-200 sm:px-5 md:sticky md:top-4 md:mb-0 md:h-[calc(100vh-2rem)] md:py-5",
+          "mb-3 flex w-full shrink-0 flex-col rounded-2xl bg-[var(--surface-card)] px-4 py-4 transition-[width] duration-200 sm:px-5 md:sticky md:top-4 md:mb-0 md:h-[calc(100vh-2rem)] md:py-5 shadow-xs",
           isSidebarCollapsed ? "md:w-[76px] md:px-4" : "md:w-[220px]",
         )}
       >
         <div className={cn("mb-6 flex items-center justify-between", isSidebarCollapsed && "md:flex-col md:justify-start md:gap-3")}>
-          <Link href="/app" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#292928] text-sm font-semibold text-white">
-              N
-            </div>
-            <span className={cn("text-lg font-semibold tracking-tight text-foreground", isSidebarCollapsed && "md:hidden")}>
-              NAVA
-            </span>
+          <Link href="/app" className="flex items-center text-foreground" title="NAVA">
+            <NavaLogo collapsed={isSidebarCollapsed} size="sm" />
           </Link>
           <button
             type="button"

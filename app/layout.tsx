@@ -21,6 +21,16 @@ export const metadata: Metadata = {
   },
   description:
     "NAVA is a premium social media workspace for planning, creating, collaborating on, and analyzing social media work.",
+  icons: {
+    icon: [
+      {
+        url: "/nava-fav.svg",
+        type: "image/svg+xml",
+      },
+    ],
+    shortcut: "/nava-fav.svg",
+    apple: "/nava-fav.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

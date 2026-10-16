@@ -7,6 +7,7 @@ import { ArrowRight, Lock, Mail, ShieldCheck } from "@/components/nava/icons";
 import { z } from "zod";
 import { useNava } from "@/components/nava/nava-provider";
 import { Badge, Button, Card, Input, Select } from "@/components/nava/ui";
+import { NavaLogo } from "@/components/nava/logo";
 
 const authSchema = z.object({
   name: z.string().trim().min(2, "Add a name with at least 2 characters."),
@@ -95,6 +96,9 @@ export function AuthPage({
       <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.95fr_1.05fr]">
         <Card className="flex flex-col justify-between gap-8 bg-[var(--surface-sidebar)] text-white">
           <div className="space-y-8">
+            <Link href="/" className="inline-block" title="NAVA">
+              <NavaLogo size="lg" className="text-white" />
+            </Link>
             <div className="space-y-4">
               <Badge className="bg-white/10 text-white" tone="neutral">
                 Shared authentication

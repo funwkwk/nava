@@ -9,6 +9,7 @@ import {
   Workflow,
 } from "@/components/nava/icons";
 import { Badge, Card, cn } from "@/components/nava/ui";
+import { NavaLogo } from "@/components/nava/logo";
 
 const featureCards = [
   {
@@ -43,15 +44,14 @@ export function LandingPage() {
     <main className="min-h-screen px-6 py-8 lg:px-10">
       <div className="mx-auto flex max-w-7xl flex-col gap-10">
         <header className="flex flex-col gap-5 rounded-[32px] border border-[var(--border-subtle)] bg-[var(--surface-card)] px-6 py-5 shadow-[var(--shadow-card)] lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--surface-brand)] text-lg font-semibold text-white">
-              N
-            </div>
-            <div>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="flex items-center" title="NAVA">
+              <NavaLogo size="lg" />
+            </Link>
+            <div className="hidden border-l border-[var(--border-subtle)] pl-4 sm:block">
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--surface-brand)]">
                 Social Media Workspace
               </p>
-              <h1 className="text-xl font-semibold">NAVA</h1>
             </div>
           </div>
           <nav className="flex flex-wrap items-center gap-3 text-sm text-[var(--muted-foreground)]">
