@@ -175,6 +175,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             name={sessionUser.name}
             organization={sessionUser.name}
             channels={scopedSocialAccounts.length}
+            avatarUrl={sessionUser.avatarUrl}
             onLogout={logout}
             placement="top"
             collapsed={isSidebarCollapsed}

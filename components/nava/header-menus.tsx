@@ -133,6 +133,7 @@ export function ProfileMenu({
   name,
   organization,
   channels,
+  avatarUrl,
   onLogout,
   placement = "bottom",
   collapsed = false,
@@ -140,6 +141,7 @@ export function ProfileMenu({
   name: string;
   organization: string;
   channels: number;
+  avatarUrl?: string | null;
   onLogout: () => void;
   placement?: "bottom" | "top";
   collapsed?: boolean;
@@ -162,8 +164,13 @@ export function ProfileMenu({
           collapsed && "md:justify-center md:px-0",
         )}
       >
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--surface-accent)] text-xs font-semibold text-[var(--surface-accent-foreground)]">
-          {name.slice(0, 1).toUpperCase()}
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--surface-accent)] text-xs font-semibold text-[var(--surface-accent-foreground)]">
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarUrl} alt={name} className="h-full w-full object-cover" />
+          ) : (
+            name.slice(0, 1).toUpperCase()
+          )}
         </span>
         <span className={cn("min-w-0 truncate text-sm font-medium", collapsed && "md:hidden")}>
           {name}
@@ -179,14 +186,26 @@ export function ProfileMenu({
               : "right-0 top-full mt-2",
           )}
         >
-          <div className="px-2 pb-3">
-            <p className="text-base font-semibold">{organization}</p>
-            <p className="mt-0.5 text-xs text-[var(--muted-foreground)]">
-              Free plan · {channels} channels
-            </p>
+          <div className="flex items-center gap-3 px-2 pb-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--surface-accent)] text-sm font-semibold text-[var(--surface-accent-foreground)]">
+              {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatarUrl} alt={name} className="h-full w-full object-cover" />
+              ) : (
+                name.slice(0, 1).toUpperCase()
+              )}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-base font-semibold">{organization}</p>
+              <p className="text-xs text-[var(--muted-foreground)]">
+                Free plan · {channels} channels
+              </p>
+            </div>
+          </div>
+          <div className="px-2 pb-2">
             <button
               type="button"
-              className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--surface-card-alt)] py-2 text-sm font-medium hover:brightness-95"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--surface-card-alt)] py-2 text-sm font-medium hover:brightness-95"
             >
               <Zap className="h-4 w-4" /> Upgrade Plan
             </button>

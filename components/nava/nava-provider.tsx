@@ -28,6 +28,7 @@ import type {
 } from "@/lib/nava/types";
 import { platformCatalog } from "@/lib/nava/navigation";
 import { supabaseConfigured } from "@/lib/supabase/env";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 const STORAGE_KEY = "nava-demo-state-v1";
 const THEME_STORAGE_KEY = "nava-theme-v1";
@@ -118,6 +119,11 @@ interface NavaContextValue {
   removeContact: (contactId: string) => void;
   updateConversation: (conversationId: string, updates: Partial<Omit<WorkspaceConversation, "id" | "workspaceId">>) => void;
   setTheme: (theme: NavaTheme) => void;
+  updateProfile: (updates: Partial<Pick<SessionUser, "name" | "avatarUrl">>) => void;
+  changeEmail: (newEmail: string) => Promise<{ success: boolean; error?: string }>;
+  changePassword: (newPassword: string) => Promise<{ success: boolean; error?: string }>;
+  setTwoFactor: (enabled: boolean, secret?: string, backupCodes?: string[]) => void;
+  deleteAccount: () => Promise<void>;
   logout: () => void;
   resetDemo: () => void;
 }
@@ -333,6 +339,157 @@ export function NavaProvider({ children }: { children: ReactNode }) {
     setState((previousState) => ({ ...previousState, conversations: (previousState.conversations ?? []).map((conversation) => conversation.id === conversationId ? { ...conversation, ...updates } : conversation) }));
   }, []);
 
+  const updateProfile = useCallback(
+    (updates: Partial<Pick<SessionUser, "name" | "avatarUrl">>) => {
+      setState((previousState) => {
+        if (!previousState.session.currentUser) {
+          return previousState;
+        }
+
+        return {
+          ...previousState,
+          session: {
+            ...previousState.session,
+            currentUser: {
+              ...previousState.session.currentUser,
+              ...updates,
+            },
+          },
+        };
+      });
+    },
+    [],
+  );
+
+  const changeEmail = useCallback(
+    async (newEmail: string): Promise<{ success: boolean; error?: string }> => {
+      const normalizedEmail = newEmail.trim().toLowerCase();
+      if (!normalizedEmail || !normalizedEmail.includes("@")) {
+        return { success: false, error: "Format email tidak valid." };
+      }
+
+      const client = getSupabaseBrowserClient();
+      if (client) {
+        try {
+          const { error } = await client.auth.updateUser({ email: normalizedEmail });
+          if (error) {
+            return { success: false, error: error.message };
+          }
+        } catch (err) {
+          return {
+            success: false,
+            error: err instanceof Error ? err.message : "Gagal memperbarui email di Supabase.",
+          };
+        }
+      }
+
+      setState((previousState) => {
+        if (!previousState.session.currentUser) {
+          return previousState;
+        }
+
+        return {
+          ...previousState,
+          session: {
+            ...previousState.session,
+            currentUser: {
+              ...previousState.session.currentUser,
+              email: normalizedEmail,
+            },
+          },
+        };
+      });
+
+      return { success: true };
+    },
+    [],
+  );
+
+  const changePassword = useCallback(
+    async (newPassword: string): Promise<{ success: boolean; error?: string }> => {
+      if (!newPassword || newPassword.length < 8) {
+        return { success: false, error: "Password minimal harus 8 karakter." };
+      }
+
+      const client = getSupabaseBrowserClient();
+      if (client) {
+        try {
+          const { error } = await client.auth.updateUser({ password: newPassword });
+          if (error) {
+            return { success: false, error: error.message };
+          }
+        } catch (err) {
+          return {
+            success: false,
+            error: err instanceof Error ? err.message : "Gagal memperbarui password di Supabase.",
+          };
+        }
+      }
+
+      setState((previousState) => {
+        if (!previousState.session.currentUser) {
+          return previousState;
+        }
+
+        return {
+          ...previousState,
+          session: {
+            ...previousState.session,
+            currentUser: {
+              ...previousState.session.currentUser,
+              password: newPassword,
+            },
+          },
+        };
+      });
+
+      return { success: true };
+    },
+    [],
+  );
+
+  const setTwoFactor = useCallback(
+    (enabled: boolean, secret?: string, backupCodes?: string[]) => {
+      setState((previousState) => {
+        if (!previousState.session.currentUser) {
+          return previousState;
+        }
+
+        return {
+          ...previousState,
+          session: {
+            ...previousState.session,
+            currentUser: {
+              ...previousState.session.currentUser,
+              twoFactorEnabled: enabled,
+              twoFactorSecret: enabled ? secret : undefined,
+              backupCodes: enabled ? backupCodes : undefined,
+            },
+          },
+        };
+      });
+    },
+    [],
+  );
+
+  const deleteAccount = useCallback(async () => {
+    const client = getSupabaseBrowserClient();
+    if (client) {
+      try {
+        await client.auth.signOut();
+      } catch {
+        // ignore error during signout
+      }
+    }
+
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(STORAGE_KEY);
+      window.localStorage.removeItem(THEME_STORAGE_KEY);
+    }
+
+    setState(createEmptyState(supabaseConfigured));
+  }, []);
+
   const logout = useCallback(() => {
     setState((previousState) => createEmptyState(previousState.supabaseConfigured));
   }, []);
@@ -434,6 +591,11 @@ export function NavaProvider({ children }: { children: ReactNode }) {
       removeContact,
       updateConversation,
       setTheme,
+      updateProfile,
+      changeEmail,
+      changePassword,
+      setTwoFactor,
+      deleteAccount,
       logout,
       resetDemo,
     }),
@@ -469,6 +631,11 @@ export function NavaProvider({ children }: { children: ReactNode }) {
       removeContact,
       updateConversation,
       setTheme,
+      updateProfile,
+      changeEmail,
+      changePassword,
+      setTwoFactor,
+      deleteAccount,
       logout,
       resetDemo,
     ],

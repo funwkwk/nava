@@ -23,6 +23,11 @@ export interface SessionUser {
   name: string;
   email: string;
   accountType: AccountType;
+  avatarUrl?: string | null;
+  twoFactorEnabled?: boolean;
+  twoFactorSecret?: string;
+  backupCodes?: string[];
+  password?: string;
 }
 
 export interface Workspace {

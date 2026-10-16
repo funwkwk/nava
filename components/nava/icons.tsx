@@ -115,6 +115,7 @@ export const BarChart3 = ChartColumnBig;
 export const Check = make(faCheck);
 export const CheckCircle2 = make(faCircleCheck);
 export const ChevronDown = make(faAngleDown);
+export const ChevronUp = make(faAngleUp);
 export const ChevronRight = make(faAngleRight);
 export const CircleHelp = make(faCircleQuestion);
 export const CircleUserRound = make(faCircleUser);
